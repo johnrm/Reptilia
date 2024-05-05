@@ -21,7 +21,7 @@ x = input("<Enter> to begin\n")
 
 
 def main():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.nam  == 'nt' else 'clear')
     print("   Reptilia Bank")
     print("-------------------")
     print("        ATM")

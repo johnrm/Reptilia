@@ -40,13 +40,17 @@ def validate_number(numbers,length):
 def card_input():
     card = input("Insert card (or type card ID): ")
     if validate_number(card, 4):
-        print("Card is valid!")
-        return card
+        print("Card Valid!")
+        pin=getpass.getpass('PIN (4 digits): ')
+        if validate_number(pin, 4):
+            print("PIN Valid!")
+            return card
+        else:
+            return False
     else:
+        print("Card is Invalid!")
         return False            
 
-#    card = input("Insert card (or type card ID): ")
-#    pin=getpass.getpass('PIN (4 digits): ')
 #    return True
     
 
@@ -66,40 +70,48 @@ def validate_card_1():
     validate_number(pin,'PIN')
     return False
     
-def menu():
-        #os.system('cls' if os.name == 'nt' else 'clear')
-        print("        Reptilia Bank")
-        print("-----------------------------")
-        print("         ATM Options")
-        print("-----------------------------")
+def menu(card):
+    """
+    Menu of user options 
+    """
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("        Reptilia Bank")
+    print("-----------------------------")
+    print("         ATM Options")
+    print("-----------------------------")
+    print(f"          Card {card}")
+    print()    
+    print("1> Check Balance")
+    print("2> Withdraw cash")
+    print("3> Lodgement")
+    print("4> Print Statement")
+    print("0 or <Enter> Cancel\n")
 
-        print("1> Check Balance")
-        print("2> Withdraw cash")
-        print("3> Lodgement")
-        print("4> Print Statement")
-        print("0 or <Enter> Cancel\n")
-
-        choice=input("Select: ")
-        if choice=="1": 
-            print("\nCheck Balance") 
-        elif choice=="2":
-            print("\nWithdraw cash") 
-        elif choice=="3":
-            print("\nLodgement") 
-        elif choice=="4":
-            print("\nPrint Statement") 
-        elif choice=="0":
-            print("\n Cancel") 
-        elif choice !="":
-            print("\n Not Valid Choice Try again")
+    choice=input("Select: ")
+    if choice=="1": 
+        print("\nCheck Balance") 
+    elif choice=="2":
+        print("\nWithdraw cash") 
+    elif choice=="3":
+        print("\nLodgement") 
+    elif choice=="4":
+        print("\nPrint Statement") 
+    elif choice=="0":
+        print("\n Cancel") 
+    elif choice !="":
+        print("\n Not Valid Choice Try again")
 
 def test_splash():
-    #os.system('cls' if os.name == 'nt' else 'clear')
-    print(' Reptilia Bank ATM simulator')
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("        Reptilia Bank")
+    print("-----------------------------")
+    print('        ATM simulator')
     print("-----------------------------")
     print('For testing purposes...')
-    print('Sample a/c: 2234')
+    print()    
+    print('Sample card: 2234')
     print('Sample PIN: 3234')
+    print()    
     input("Press <Enter> to continue")    
 
 
@@ -114,17 +126,14 @@ def main():
         print("             ATM")
         print("-----------------------------\n")
 
-        card_input()
+        card = card_input()
+        if card:
+            menu(card)
+        else:
+            print("fail")
+            x=input('press <enter>')
 
-#            cardinput("Card Valid - Press <Enter>")
-#            menu()
-#            print("card: ", card)
         input("Session end")
-#        if validate_card():
-#            menu()
-#        else:
-#            print("fail")
-#            x=input('press <enter>')
 
-#test_splash()
+test_splash()
 main()

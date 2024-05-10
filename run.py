@@ -20,22 +20,34 @@ accounts = SHEET.worksheet('accounts')
 #print(data)
 #x = input("<Enter> to begin\n")
 
-def validate_number(numbers,type):
+def validate_number(numbers,length):
+    """
+    Check 'numbers' is numeric, correct length, reporting if incorrect
+    """
     try:
-        numbers.isnumeric()
-#        if len(str(numbers)) != 4:  
-#                f"{type} should be 4 digita, you provided {len(str(num))}"
-    except:
-        print("Please try again.\n")
+        [int(number) for number in numbers]
+        if len(numbers) != length:
+            raise Exception
         return True
+    except ValueError:
+        print("Non-numeric entry!")
+        return False
+    except Exception:
+        print(f"{len(numbers)} digits entered, {length} expected!")
+        return False
 
-    return False
 
-
-def validate_card():
+def card_input():
     card = input("Insert card (or type card ID): ")
-    pin=getpass.getpass('PIN (4 digits): ')
-    return True
+    if validate_number(card, 4):
+        print("Card is valid!")
+        return card
+    else:
+        return False            
+
+#    card = input("Insert card (or type card ID): ")
+#    pin=getpass.getpass('PIN (4 digits): ')
+#    return True
     
 
 def validate_card_1():
@@ -55,7 +67,7 @@ def validate_card_1():
     return False
     
 def menu():
-        os.system('cls' if os.name == 'nt' else 'clear')
+        #os.system('cls' if os.name == 'nt' else 'clear')
         print("        Reptilia Bank")
         print("-----------------------------")
         print("         ATM Options")
@@ -81,22 +93,32 @@ def menu():
         elif choice !="":
             print("\n Not Valid Choice Try again")
 
-def main():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print('Welcome to ATM simulator!')
+def test_splash():
+    #os.system('cls' if os.name == 'nt' else 'clear')
+    print(' Reptilia Bank ATM simulator')
+    print("-----------------------------")
     print('For testing purposes...')
     print('Sample a/c: 2234')
     print('Sample PIN: 3234')
     input("Press <Enter> to continue")    
+
+
+def main():
+    """
+    Main routine
+    """
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("        Reptilia Bank")
         print("-----------------------------")
         print("             ATM")
         print("-----------------------------\n")
-        if validate_card():
-            input("Card Valid - Press <Enter>")
-            menu()
+
+        card_input()
+
+#            cardinput("Card Valid - Press <Enter>")
+#            menu()
+#            print("card: ", card)
         input("Session end")
 #        if validate_card():
 #            menu()
@@ -104,4 +126,5 @@ def main():
 #            print("fail")
 #            x=input('press <enter>')
 
+#test_splash()
 main()

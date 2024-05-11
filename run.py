@@ -165,9 +165,9 @@ def main():
         card = card_input()
         verify, pin_no, pin_count, account = get_card_detail(card)
 
-        #Notify if invalid card and quit loop
+        #Notify user of invalid card and quit loop
         if verify == "invalid":
-            print("Card invalid - please contact Bank")
+            print("Invalid card - please contact Bank")
             time.sleep(3)
             continue
 
@@ -177,21 +177,18 @@ def main():
             time.sleep(3)
             continue
         elif (int(pin_count) > 0):
-            print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempt{'s' if (int(pin_count) == 1) else ''} left")
+            print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempt{'s' if (MAX_PIN_FAIL - int(pin_count) > 1) else ''} left")
 
         #Increment fail count if incorrect PIN, reset if PIN is correct, then continue to Menu
         while True:
-            if not pin_input(pin_no):
+            pin = pin_input(pin_no)
+            if not pin:
                 pin_fail(card)
-                continue
+                break
             else:
                 pin_reset(card)
                 menu(account)
                 break
-
-        #card, pin_no, pin_count, account = False
-
-        
-
+       
 #test_splash()
 main()

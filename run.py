@@ -57,12 +57,15 @@ def get_card_detail(card):
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
-    rownum = cardlist.index(card) + 1
+    try:
+        rownum = cardlist.index(card) + 1
+    except ValueError:
+        return "invalid", 0, 0, 0
     row = cardsheet.row_values(rownum)
     pin_no = row[1]
     pin_count = row[2]
     account = row[3]
-    return pin_no, pin_count, account
+    return "valid", pin_no, pin_count, account
 
 def card_input():
     """
@@ -160,7 +163,13 @@ def main():
         print("-----------------------------\n")
 
         card = card_input()
-        pin_no, pin_count, account = get_card_detail(card)
+        verify, pin_no, pin_count, account = get_card_detail(card)
+
+        #Notify if invalid card and quit loop
+        if verify == "invalid":
+            print("Card invalid - please contact Bank")
+            time.sleep(3)
+            continue
 
         #Notify user of card and PIN issues
         if (int(pin_count) == MAX_PIN_FAIL):
@@ -177,9 +186,7 @@ def main():
                 continue
             else:
                 pin_reset(card)
-                while account:
-                    menu(account)
-
+                menu(account)
                 break
 
         #card, pin_no, pin_count, account = False

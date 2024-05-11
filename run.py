@@ -1,4 +1,5 @@
 import os
+import time
 import getpass
 import gspread
 from google.oauth2.service_account import Credentials
@@ -13,6 +14,9 @@ CREDS = Credentials.from_service_account_file('atm_creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('ATM')
+
+#Max allowed Pin failures
+MAX_PIN_FAIL = 3
 
 accounts = SHEET.worksheet('accounts')
 
@@ -36,23 +40,50 @@ def validate_number(numbers,length):
         print(f"{len(numbers)} digits entered, {length} expected!")
         return False
 
+def pin_check(card):
+    x=1
+
+def pin_fail(card):
+    input('PIN fail')
+
+def pin_reset(card):
+    input('PIN reset')
+    
+
+def get_card_detail(card):
+    """
+    Get account number and PIN for the inserted Card
+    
+    """
+    cardsheet = SHEET.worksheet("cards")
+    cardlist = cardsheet.col_values(1)
+    rownum = cardlist.index(card) + 1
+    row = cardsheet.row_values(rownum)
+    pin_no = row[1]
+    pin_count = row[2]
+    account = row[3]
+    return pin_no, pin_count, account
 
 def card_input():
-    card = input("Insert card (or type card ID): ")
+    """
+    Input Card and PIN from user
+    Call validation and check for PIN count
+    """
+    card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
-        print("Card Valid!")
-        pin=getpass.getpass('PIN (4 digits): ')
-        if validate_number(pin, 4):
-            print("PIN Valid!")
-            return card
-        else:
-            return False
+        return card
     else:
-        print("Card is Invalid!")
-        return False            
+        return False
 
-#    return True
-    
+def pin_input(pin_no):
+    user_pin=getpass.getpass('Enter PIN (4 digits): ')
+    if validate_number(user_pin, 4):
+        if (user_pin != pin_no):
+            return False
+        else:
+            return True
+    else:
+        return False
 
 def validate_card_1():
     try_count = 0
@@ -87,6 +118,7 @@ def menu(card):
     print("4> Print Statement")
     print("0 or <Enter> Cancel\n")
 
+    #Menu selection
     choice=input("Select: ")
     if choice=="1": 
         print("\nCheck Balance") 
@@ -99,7 +131,8 @@ def menu(card):
     elif choice=="0":
         print("\n Cancel") 
     elif choice !="":
-        print("\n Not Valid Choice Try again")
+        print("\n Invalid Choice Try again")
+    input("Enter")
 
 def test_splash():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -127,13 +160,31 @@ def main():
         print("-----------------------------\n")
 
         card = card_input()
-        if card:
-            menu(card)
-        else:
-            print("fail")
-            x=input('press <enter>')
+        pin_no, pin_count, account = get_card_detail(card)
 
-        input("Session end")
+        #Notify user of card and PIN issues
+        if (int(pin_count) == MAX_PIN_FAIL):
+            print("Card retained - please contact Bank")
+            time.sleep(3)
+            continue
+        elif (int(pin_count) > 0):
+            print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempt{'s' if (int(pin_count) == 1) else ''} left")
 
-test_splash()
+        #Increment fail count if incorrect PIN, reset if PIN is correct, then continue to Menu
+        while True:
+            if not pin_input(pin_no):
+                pin_fail(card)
+                continue
+            else:
+                pin_reset(card)
+                while account:
+                    menu(account)
+
+                break
+
+        #card, pin_no, pin_count, account = False
+
+        
+
+#test_splash()
 main()

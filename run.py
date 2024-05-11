@@ -108,34 +108,37 @@ def menu(card):
     """
     Menu of user options 
     """
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("        Reptilia Bank")
-    print("-----------------------------")
-    print("         ATM Options")
-    print("-----------------------------")
-    print(f"          Card {card}")
-    print()    
-    print("1> Check Balance")
-    print("2> Withdraw cash")
-    print("3> Lodgement")
-    print("4> Print Statement")
-    print("0 or <Enter> Cancel\n")
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("        Reptilia Bank")
+        print("-----------------------------")
+        print("         ATM Options")
+        print("-----------------------------")
+        print(f"          Card {card}")
+        print()    
+        print("1> Check Balance")
+        print("2> Withdraw cash")
+        print("3> Lodgement")
+        print("4> Print Statement")
+        print("0 or <Enter> Cancel\n")
 
-    #Menu selection
-    choice=input("Select: ")
-    if choice=="1": 
-        print("\nCheck Balance") 
-    elif choice=="2":
-        print("\nWithdraw cash") 
-    elif choice=="3":
-        print("\nLodgement") 
-    elif choice=="4":
-        print("\nPrint Statement") 
-    elif choice=="0":
-        print("\n Cancel") 
-    elif choice !="":
-        print("\n Invalid Choice Try again")
-    input("Enter")
+        #Menu selection
+        choice=input("Select: ")
+        if choice=="1":
+            print("\nCheck Balance")
+        elif choice=="2":
+            print("\nWithdraw cash")
+        elif choice=="3":
+            print("\nLodgement")
+        elif choice=="4":
+            print("\nPrint Statement")
+        elif choice=="0":
+            print("\nCancel")
+            input("Enter")
+            break
+        elif choice !="":
+            print("\nInvalid Choice Try again")
+        input("Enter")
 
 def test_splash():
     os.system('cls' if os.name == 'nt' else 'clear')

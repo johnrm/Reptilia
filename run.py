@@ -35,10 +35,8 @@ TRANSACTION_LIMIT = 300
 def atm_log(action, amount):
     time='{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
     data=[time,action,amount]
-    print("Updating log...")
     log = SHEET.worksheet('atm_log')
     log.append_row(data)
-    print("Done.")
 
 def validate_number(numbers,length):
     """
@@ -239,8 +237,6 @@ def menu(account):
 
         elif (choice=="0" or choice==""):
             atm_log('exit', account)
-            print("\nCancel")
-            time.sleep(1)
             break
 
 def test_splash():

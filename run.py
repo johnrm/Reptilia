@@ -26,7 +26,7 @@ MAX_PIN_FAIL = 3
 #Set display width
 DISPLAY_WIDTH = 30
 #Bank Account (Account for the ATM machine)
-BANK_AC = "9999"
+CASH_AC = "9999"
 #Transaction limit
 TRANSACTION_LIMIT = 300
 
@@ -175,7 +175,7 @@ def menu(account):
             #Cash Withdrawal
             atm_log('withdrawal', account)
             screen_header("Withdraw cash")
-            verify, bank_bal = get_account_detail(BANK_AC)
+            verify, bank_bal = get_account_detail(CASH_AC)
             verify, acc_balance = get_account_detail(account)
             print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
             withdrawal = input("Withdrawal amount? ")
@@ -186,12 +186,26 @@ def menu(account):
             withdrawal = int(withdrawal)
             new_balance=acc_balance-withdrawal
             print(f'New balance    : {CURRENCY}'+ str(new_balance))         
+            atm_log('withdrawal', withdrawal)
             time.sleep(3)
 
         elif choice=="3":
+            #Lodgement
             atm_log('lodgement', account)
-            print("\nLodgement unimplemented")
-            time.sleep(1)
+            screen_header("Lodge Cheque")
+            verify, bank_bal = get_account_detail(CASH_AC)
+            verify, acc_balance = get_account_detail(account)
+            print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+            withdrawal = input("Withdrawal amount? ")
+            #validate(amount)
+            print(f'Current balance: {CURRENCY}{acc_balance}')
+            bank_bal = int(bank_bal)
+            acc_balance = int(acc_balance)
+            withdrawal = int(withdrawal)
+            new_balance=acc_balance-withdrawal
+            print(f'New balance    : {CURRENCY}'+ str(new_balance))         
+            atm_log('lodgement', lodgement)
+            time.sleep(3)
 
         elif choice=="4":
             atm_log('statement', account)

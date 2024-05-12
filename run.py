@@ -18,12 +18,6 @@ SHEET = GSPREAD_CLIENT.open('ATM')
 #Max allowed Pin failures
 MAX_PIN_FAIL = 3
 
-accounts = SHEET.worksheet('accounts')
-
-#data = accounts.get_all_values()
-#print(data)
-#x = input("<Enter> to begin\n")
-
 def validate_number(numbers,length):
     """
     Check 'numbers' is numeric, correct length, reporting if incorrect
@@ -40,16 +34,22 @@ def validate_number(numbers,length):
         print(f"{len(numbers)} digits entered, {length} expected!")
         return False
 
+def return_card():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("        Reptilia Bank")
+    print("-----------------------------")
+    print("             ATM")
+    print("-----------------------------\n")
+    print("    Please take your card")
+    print("      Have a nice day!")
+    time.sleep(3)
+
 def pin_check(card):
     x=1
 
 def pin_fail(card):
     input('PIN fail')
-
-def pin_reset(card):
-    input('PIN reset')
-    
-
+  
 def get_card_detail(card):
     """
     Get details for the inserted Card
@@ -74,7 +74,6 @@ def put_card_detail(card,pin_no,pin_count):
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
-    print(cardlist)
     try:
         rownum = cardlist.index(card) + 1
     except ValueError:
@@ -103,23 +102,7 @@ def pin_input(pin_no):
             return True
     else:
         return False
-
-def validate_card_1():
-    try_count = 0
-    while (try_count <3):
-        card = input("Insert card (or type card ID): ")
-        valid = validate_number(card,'Card ID')
-        try_count += 1
-        print()
-        print(valid)
-        print(try_count)
-
-    stock = SHEET.worksheet("cards").get_all_values()
-    stock_row = stock[-1]
-    pin=getpass.getpass('PIN (4 digits): ')
-    validate_number(pin,'PIN')
-    return False
-    
+   
 def menu(card):
     """
     Menu of user options 
@@ -136,6 +119,7 @@ def menu(card):
         print("2> Withdraw cash")
         print("3> Lodgement")
         print("4> Print Statement")
+        print("5> Change PIN")
         print("0 or <Enter> Cancel\n")
 
         #Menu selection
@@ -148,12 +132,12 @@ def menu(card):
             print("\nLodgement")
         elif choice=="4":
             print("\nPrint Statement")
-        elif choice=="0":
+        elif choice=="5":
+            print("\nChange PIN")
+        elif (choice=="0" or choice==""):
             print("\nCancel")
             input("Enter")
             break
-        elif choice !="":
-            print("\nInvalid Choice Try again")
         input("Enter")
 
 def test_splash():
@@ -183,12 +167,11 @@ def main():
 
         card = card_input()
         verify, pin_no, pin_count, account = get_card_detail(card)
-#        put_card_detail(card,pin_no, pin_count)
 
         #Notify user of invalid card and quit loop
         if verify == "invalid":
             print("Invalid card - please contact Bank")
-            time.sleep(3)
+            return_card()
             continue
 
         #Notify user of card and PIN issues
@@ -205,12 +188,19 @@ def main():
             if not pin:
                 pin_count = str(int(pin_count) + 1)
                 put_card_detail(card, pin_no, pin_count)
+                if pin_count == 3:
+                    #Card retained
+                    print("Card retained - please contact Bank")
+                    time.sleep(3)
+                    break
                 pin_fail(card)
                 break
             else:
-                pin_reset(card)
+                #If PIN is correct, reset fail count on card
+                put_card_detail(card, pin_no, 0)
                 menu(account)
+                return_card()
                 break
-       
+
 #test_splash()
 main()

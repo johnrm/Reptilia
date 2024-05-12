@@ -46,11 +46,7 @@ def return_card():
     """
     Return card to user
     """
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("        Reptilia Bank")
-    print("-----------------------------")
-    print("             ATM")
-    print("-----------------------------\n")
+    screen_header("ATM")
     print("    Please take your card")
     print("      Have a nice day!")
     time.sleep(3)
@@ -178,11 +174,7 @@ def menu(account):
             break
 
 def test_splash():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("        Reptilia Bank")
-    print("-----------------------------")
-    print('        ATM simulator')
-    print("-----------------------------")
+    screen_header("ATM simulator")
     print('For testing purposes...')
     print()    
     print('Sample card: 2234')
@@ -236,5 +228,5 @@ def main():
                 return_card()
                 break
 
-#test_splash()
+test_splash()
 main()

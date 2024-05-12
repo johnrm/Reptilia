@@ -26,6 +26,8 @@ MAX_PIN_FAIL = 3
 DISPLAY_WIDTH = 30
 #Bank Account (Account for the ATM machine)
 BANK_AC = "9999"
+#Transaction limit
+TRANSACTION_LIMIT = 300
 
 def validate_number(numbers,length):
     """
@@ -160,8 +162,20 @@ def menu(account):
             time.sleep(3)
 
         elif choice=="2":
-            print("\nWithdrawal unimplemented")
-            time.sleep(1)
+            #Cash Withdrawal
+            screen_header("Withdraw cash")
+            verify, bank_bal = get_account_detail(BANK_AC)
+            verify, acc_balance = get_account_detail(account)
+            print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+            withdrawal = input("Withdrawal amount? ")
+            #validate(amount)
+            print(f'Current balance: {CURRENCY}{acc_balance}')
+            bank_bal = int(bank_bal)
+            acc_balance = int(acc_balance)
+            withdrawal = int(withdrawal)
+            new_balance=acc_balance-withdrawal
+            print(f'New balance    : {CURRENCY}'+ str(new_balance))         
+            time.sleep(3)
 
         elif choice=="3":
             print("\nLodgement unimplemented")
@@ -235,5 +249,5 @@ def main():
                 return_card()
                 break
 
-test_splash()
+#test_splash()
 main()

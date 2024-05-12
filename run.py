@@ -86,21 +86,6 @@ def get_card_detail(card):
     account = row[3]
     return "valid", pin_no, pin_count, account
 
-def get_account_detail(account):
-    """
-    Get and return account details
-    """
-    accountsheet = SHEET.worksheet("accounts")
-    accountlist = accountsheet.col_values(1)
-    try:
-        rownum = accountlist.index(account) + 1
-    except ValueError:
-        return "invalid", 0
-    row = accountsheet.row_values(rownum)
-    time.sleep(3)
-    balance = row[4]
-    return "valid", balance 
-
 def put_card_detail(card,pin_no,pin_count):
     """
     Update details for the inserted Card
@@ -114,6 +99,34 @@ def put_card_detail(card,pin_no,pin_count):
         return
     row = cardsheet.row_values(rownum)
     cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
+
+def get_account_detail(account):
+    """
+    Get and return account detail
+    """
+    accountsheet = SHEET.worksheet("accounts")
+    accountlist = accountsheet.col_values(1)
+    try:
+        rownum = accountlist.index(account) + 1
+    except ValueError:
+        return "invalid", 0
+    row = accountsheet.row_values(rownum)
+    time.sleep(3)
+    balance = row[4]
+    return "valid", balance 
+
+def put_account_detail(account, balance, time):
+    """
+    Update account balance
+    """
+    accountsheet = SHEET.worksheet("accounts")
+    accountlist = accountsheet.col_values(1)
+    try:
+        rownum = accountlist.index(account) + 1
+    except ValueError:
+        return
+    row = accountsheet.row_values(rownum)
+    accountsheet.update([[balance, time]], f'E{rownum}:F{rownum}')
     
 def card_input():
     """
@@ -175,18 +188,22 @@ def menu(account):
             #Cash Withdrawal
             atm_log('withdrawal', account)
             screen_header("Withdraw cash")
-            verify, bank_bal = get_account_detail(CASH_AC)
+            verify, cash_bal = get_account_detail(CASH_AC)
             verify, acc_balance = get_account_detail(account)
             print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+            print(f'Available funds : {CURRENCY}{acc_balance}')
             withdrawal = input("Withdrawal amount? ")
             #validate(amount)
-            print(f'Current balance: {CURRENCY}{acc_balance}')
-            bank_bal = int(bank_bal)
-            acc_balance = int(acc_balance)
-            withdrawal = int(withdrawal)
-            new_balance=acc_balance-withdrawal
-            print(f'New balance    : {CURRENCY}'+ str(new_balance))         
+            cash_bal = int(cash_bal) #Amount in ATM
+            acc_balance = int(acc_balance) # User balance
+            withdrawal = int(withdrawal) # Requested withdrawal amount
+            new_acc_balance = acc_balance - withdrawal
+            new_cash_balance = cash_bal - withdrawal
+            print(f'New balance    : {CURRENCY}'+ str(new_acc_balance))
             atm_log('withdrawal', withdrawal)
+            time_stamp=('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+            put_account_detail(account, new_acc_balance, time_stamp)
+            put_account_detail(CASH_AC, new_cash_balance, time_stamp)
             time.sleep(3)
 
         elif choice=="3":

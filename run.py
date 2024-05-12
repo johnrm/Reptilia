@@ -2,6 +2,7 @@ import os
 import time
 import getpass
 import gspread
+import datetime
 from google.oauth2.service_account import Credentials
 
 SCOPE = [
@@ -28,6 +29,14 @@ DISPLAY_WIDTH = 30
 BANK_AC = "9999"
 #Transaction limit
 TRANSACTION_LIMIT = 300
+
+def atm_log(action, amount):
+    time='{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+    data=[time,action,amount]
+    print("Updating log...\n")
+    log = SHEET.worksheet('atm_log')
+    log.append_row(data)
+    print("Log updated successfully\n")
 
 def validate_number(numbers,length):
     """
@@ -209,6 +218,7 @@ def main():
     Main routine
     """
     while True:
+        atm_log('Start', 0)
         screen_header("ATM")
 
         card = card_input()

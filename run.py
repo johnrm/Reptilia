@@ -218,24 +218,28 @@ def main():
     Main routine
     """
     while True:
-        atm_log('Start', 0)
+        atm_log('start', 0)
         screen_header("ATM")
 
         card = card_input()
+        atm_log('card_in', card)
         verify, pin_no, pin_count, account = get_card_detail(card)      
 
         #Notify user of invalid card and quit loop
         if verify == "invalid":
             print("Invalid card - please contact Bank")
+            atm_log('card_return', card)
             return_card()
             continue
 
         #Notify user of card and PIN issues
         if (int(pin_count) == MAX_PIN_FAIL):
             print("Card error - please contact Bank")
+            atm_log('card_error_max_pin', card)
             time.sleep(3)
             continue
         elif (int(pin_count) > 0):
+            atm_log('card_warning_pin_count', card)
             print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempt{'s' if (MAX_PIN_FAIL - int(pin_count) > 1) else ''} left")
 
         #Increment fail count if incorrect PIN, reset if PIN is correct, then continue to Menu
@@ -248,12 +252,15 @@ def main():
                 if pin_count == 3:
                     #Card retained
                     print("Card retained - please contact Bank")
+                    atm_log('card_retained', card)
                     time.sleep(3)
                     break
+                atm_log('card_pin_fail', card)
                 pin_fail(card)
                 break
             else:
                 #If PIN is correct, reset fail count on card
+                atm_log('card_pin_reset', card)
                 put_card_detail(card, pin_no, 0)
                 menu(account)
                 return_card()

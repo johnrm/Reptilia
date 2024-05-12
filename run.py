@@ -24,7 +24,8 @@ CURRENCY = "EUR"
 MAX_PIN_FAIL = 3
 #Set display width
 DISPLAY_WIDTH = 30
-
+#Bank Account (Account for the ATM machine)
+BANK_AC = "9999"
 
 def validate_number(numbers,length):
     """
@@ -83,9 +84,9 @@ def get_account_detail(account):
     try:
         rownum = accountlist.index(account) + 1
     except ValueError:
-        return "invalid", 0, 0, 0
+        return "invalid", 0
     row = accountsheet.row_values(rownum)
-    print(row)
+    time.sleep(3)
     balance = row[4]
     return "valid", balance 
 
@@ -150,24 +151,30 @@ def menu(account):
 
         #Menu selection
         choice=input("Select: ")
+
         if choice=="1":
-            verify, balance= get_account_detail(account)
-            print(f'Current balance: {CURRENCY}{balance}')
+            #Account Balance
+            screen_header("Account balance")
+            verify, balance = get_account_detail(account)
+            print(f'Current balance: {CURRENCY}{balance}'.center(DISPLAY_WIDTH))
             time.sleep(3)
-            print("\nCheck Balance unimplemented")
-            time.sleep(1)
+
         elif choice=="2":
-            print("\nWithdraw cash unimplemented")
+            print("\nWithdrawal unimplemented")
             time.sleep(1)
+
         elif choice=="3":
             print("\nLodgement unimplemented")
             time.sleep(1)
+
         elif choice=="4":
             print("\nPrint Statement unimplemented")
             time.sleep(1)
+
         elif choice=="5":
             print("\nChange PIN unimplemented")
             time.sleep(1)
+
         elif (choice=="0" or choice==""):
             print("\nCancel")
             time.sleep(1)

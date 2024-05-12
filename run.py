@@ -33,10 +33,10 @@ TRANSACTION_LIMIT = 300
 def atm_log(action, amount):
     time='{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
     data=[time,action,amount]
-    print("Updating log...\n")
+    print("Updating log...")
     log = SHEET.worksheet('atm_log')
     log.append_row(data)
-    print("Log updated successfully\n")
+    print("Done.")
 
 def validate_number(numbers,length):
     """
@@ -193,16 +193,14 @@ def menu(account):
             #Lodgement
             atm_log('lodgement', account)
             screen_header("Lodge Cheque")
-            verify, bank_bal = get_account_detail(CASH_AC)
             verify, acc_balance = get_account_detail(account)
-            print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
-            withdrawal = input("Withdrawal amount? ")
+            print(f"Lodgement limit {CURRENCY}{TRANSACTION_LIMIT}")
+            lodgement = input("lodgement amount? ")
             #validate(amount)
             print(f'Current balance: {CURRENCY}{acc_balance}')
-            bank_bal = int(bank_bal)
             acc_balance = int(acc_balance)
-            withdrawal = int(withdrawal)
-            new_balance=acc_balance-withdrawal
+            lodgement = int(lodgement)
+            new_balance=acc_balance+lodgement
             print(f'New balance    : {CURRENCY}'+ str(new_balance))         
             atm_log('lodgement', lodgement)
             time.sleep(3)

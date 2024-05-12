@@ -113,8 +113,6 @@ def menu(card):
         print("-----------------------------")
         print("         ATM Options")
         print("-----------------------------")
-        print(f"          Card {card}")
-        print()    
         print("1> Check Balance")
         print("2> Withdraw cash")
         print("3> Lodgement")

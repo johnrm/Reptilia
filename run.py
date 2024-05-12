@@ -52,8 +52,8 @@ def pin_reset(card):
 
 def get_card_detail(card):
     """
-    Get account number and PIN for the inserted Card
-    
+    Get details for the inserted Card
+    Tell calling function if card is valid/invalid
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
@@ -67,6 +67,22 @@ def get_card_detail(card):
     account = row[3]
     return "valid", pin_no, pin_count, account
 
+def put_card_detail(card,pin_no,pin_count):
+    """
+    Update details for the inserted Card
+    (pin_no and pin_count only)
+    """
+    cardsheet = SHEET.worksheet("cards")
+    cardlist = cardsheet.col_values(1)
+    print(cardlist)
+    try:
+        rownum = cardlist.index(card) + 1
+    except ValueError:
+        return
+    row = cardsheet.row_values(rownum)
+    cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
+
+    
 def card_input():
     """
     Input Card and PIN from user
@@ -167,6 +183,7 @@ def main():
 
         card = card_input()
         verify, pin_no, pin_count, account = get_card_detail(card)
+#        put_card_detail(card,pin_no, pin_count)
 
         #Notify user of invalid card and quit loop
         if verify == "invalid":
@@ -186,6 +203,8 @@ def main():
         while True:
             pin = pin_input(pin_no)
             if not pin:
+                pin_count = str(int(pin_count) + 1)
+                put_card_detail(card, pin_no, pin_count)
                 pin_fail(card)
                 break
             else:

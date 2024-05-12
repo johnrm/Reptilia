@@ -15,8 +15,16 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('ATM')
 
-#Max allowed Pin failures
+#System constants
+#Bank name
+BANK_NAME = "Reptilia Bank"
+#Currency
+CURRENCY = "EUR"
+#Max failed PIN on card
 MAX_PIN_FAIL = 3
+#Set display width
+DISPLAY_WIDTH = 30
+
 
 def validate_number(numbers,length):
     """
@@ -35,6 +43,9 @@ def validate_number(numbers,length):
         return False
 
 def return_card():
+    """
+    Return card to user
+    """
     os.system('cls' if os.name == 'nt' else 'clear')
     print("        Reptilia Bank")
     print("-----------------------------")
@@ -44,10 +55,10 @@ def return_card():
     print("      Have a nice day!")
     time.sleep(3)
 
-def pin_check(card):
-    x=1
-
 def pin_fail(card):
+    """
+    Do this when PIN is entered incorrectly
+    """
     input('PIN fail')
   
 def get_card_detail(card):
@@ -95,7 +106,6 @@ def put_card_detail(card,pin_no,pin_count):
         return
     row = cardsheet.row_values(rownum)
     cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
-
     
 def card_input():
     """
@@ -109,6 +119,9 @@ def card_input():
         return False
 
 def pin_input(pin_no):
+    """
+    Get pin from user
+    """
     user_pin=getpass.getpass('Enter PIN (4 digits): ')
     if validate_number(user_pin, 4):
         if (user_pin != pin_no):
@@ -118,17 +131,20 @@ def pin_input(pin_no):
     else:
         return False
    
+def screen_header(function):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(BANK_NAME.center(DISPLAY_WIDTH))
+    print ("-" * DISPLAY_WIDTH)
+    print(function.center(DISPLAY_WIDTH))
+    print ("-" * DISPLAY_WIDTH)
+    print()    
+
 def menu(account):
     """
     Menu of user options 
     """
     while True:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("        Reptilia Bank")
-        print("-----------------------------")
-        print("         ATM Options")
-        print("-----------------------------")
-        print()    
+        screen_header("ATM Options")
         print("1> Check Balance")
         print("2> Withdraw cash")
         print("3> Lodgement")
@@ -140,8 +156,8 @@ def menu(account):
         choice=input("Select: ")
         if choice=="1":
             verify, balance= get_account_detail(account)
-            print(f'Current balance: ')
-
+            print(f'Current balance: {CURRENCY}{balance}')
+            time.sleep(3)
             print("\nCheck Balance unimplemented")
             time.sleep(1)
         elif choice=="2":
@@ -180,11 +196,7 @@ def main():
     Main routine
     """
     while True:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("        Reptilia Bank")
-        print("-----------------------------")
-        print("             ATM")
-        print("-----------------------------\n")
+        screen_header("ATM")
 
         card = card_input()
         verify, pin_no, pin_count, account = get_card_detail(card)      

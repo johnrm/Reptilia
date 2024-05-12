@@ -67,6 +67,21 @@ def get_card_detail(card):
     account = row[3]
     return "valid", pin_no, pin_count, account
 
+def get_account_detail(account):
+    """
+    Get and return account details
+    """
+    accountsheet = SHEET.worksheet("accounts")
+    accountlist = accountsheet.col_values(1)
+    try:
+        rownum = accountlist.index(account) + 1
+    except ValueError:
+        return "invalid", 0, 0, 0
+    row = accountsheet.row_values(rownum)
+    print(row)
+    balance = row[4]
+    return "valid", balance 
+
 def put_card_detail(card,pin_no,pin_count):
     """
     Update details for the inserted Card
@@ -103,7 +118,7 @@ def pin_input(pin_no):
     else:
         return False
    
-def menu(card):
+def menu(account):
     """
     Menu of user options 
     """
@@ -113,6 +128,7 @@ def menu(card):
         print("-----------------------------")
         print("         ATM Options")
         print("-----------------------------")
+        print()    
         print("1> Check Balance")
         print("2> Withdraw cash")
         print("3> Lodgement")
@@ -123,20 +139,27 @@ def menu(card):
         #Menu selection
         choice=input("Select: ")
         if choice=="1":
-            print("\nCheck Balance")
+            verify, balance= get_account_detail(account)
+            print(f'Current balance: ')
+
+            print("\nCheck Balance unimplemented")
+            time.sleep(1)
         elif choice=="2":
-            print("\nWithdraw cash")
+            print("\nWithdraw cash unimplemented")
+            time.sleep(1)
         elif choice=="3":
-            print("\nLodgement")
+            print("\nLodgement unimplemented")
+            time.sleep(1)
         elif choice=="4":
-            print("\nPrint Statement")
+            print("\nPrint Statement unimplemented")
+            time.sleep(1)
         elif choice=="5":
-            print("\nChange PIN")
+            print("\nChange PIN unimplemented")
+            time.sleep(1)
         elif (choice=="0" or choice==""):
             print("\nCancel")
-            input("Enter")
+            time.sleep(1)
             break
-        input("Enter")
 
 def test_splash():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -164,7 +187,7 @@ def main():
         print("-----------------------------\n")
 
         card = card_input()
-        verify, pin_no, pin_count, account = get_card_detail(card)
+        verify, pin_no, pin_count, account = get_card_detail(card)      
 
         #Notify user of invalid card and quit loop
         if verify == "invalid":
@@ -174,7 +197,7 @@ def main():
 
         #Notify user of card and PIN issues
         if (int(pin_count) == MAX_PIN_FAIL):
-            print("Card retained - please contact Bank")
+            print("Card error - please contact Bank")
             time.sleep(3)
             continue
         elif (int(pin_count) > 0):
@@ -184,6 +207,7 @@ def main():
         while True:
             pin = pin_input(pin_no)
             if not pin:
+                #If PIN is incorrect
                 pin_count = str(int(pin_count) + 1)
                 put_card_detail(card, pin_no, pin_count)
                 if pin_count == 3:

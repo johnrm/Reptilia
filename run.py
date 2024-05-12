@@ -165,6 +165,7 @@ def menu(account):
 
         if choice=="1":
             #Account Balance
+            atm_log('balance', account)
             screen_header("Account balance")
             verify, balance = get_account_detail(account)
             print(f'Current balance: {CURRENCY}{balance}'.center(DISPLAY_WIDTH))
@@ -172,6 +173,7 @@ def menu(account):
 
         elif choice=="2":
             #Cash Withdrawal
+            atm_log('withdrawal', account)
             screen_header("Withdraw cash")
             verify, bank_bal = get_account_detail(BANK_AC)
             verify, acc_balance = get_account_detail(account)
@@ -187,18 +189,22 @@ def menu(account):
             time.sleep(3)
 
         elif choice=="3":
+            atm_log('lodgement', account)
             print("\nLodgement unimplemented")
             time.sleep(1)
 
         elif choice=="4":
+            atm_log('statement', account)
             print("\nPrint Statement unimplemented")
             time.sleep(1)
 
         elif choice=="5":
+            atm_log('pin_change', account)
             print("\nChange PIN unimplemented")
             time.sleep(1)
 
         elif (choice=="0" or choice==""):
+            atm_log('exit', account)
             print("\nCancel")
             time.sleep(1)
             break
@@ -218,7 +224,7 @@ def main():
     Main routine
     """
     while True:
-        atm_log('start', 0)
+        atm_log('start_attract', 0)
         screen_header("ATM")
 
         card = card_input()
@@ -266,5 +272,6 @@ def main():
                 return_card()
                 break
 
+atm_log('code_start', 0)
 #test_splash()
 main()

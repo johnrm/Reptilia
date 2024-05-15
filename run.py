@@ -11,7 +11,7 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
     ]
 
-CREDS = Credentials.from_service_account_file('atm_creds.json')
+CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('ATM')
@@ -72,7 +72,7 @@ def pin_fail(card):
     """
     Do this when PIN is entered incorrectly
     """
-    input('PIN fail\n')
+    input('PIN fail')
   
 
 def get_card_detail(card):
@@ -143,7 +143,7 @@ def card_input():
     Input Card and PIN from user
     Call validation and check for PIN count
     """
-    card = input("Insert card (or enter card ID): \n")
+    card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
         return card
     else:
@@ -188,7 +188,7 @@ def menu(account):
         print("0> Cancel\n")
 
         #Menu selection
-        choice = input("Select: \n")
+        choice = input("Select: ")
 
         if choice == "1":
             #Account Balance
@@ -206,7 +206,7 @@ def menu(account):
             verify, acc_balance = get_account_detail(account)
             print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
             print(f'Available funds : {CURRENCY}{acc_balance}')
-            withdrawal = int(input("Withdrawal amount? \n")) #Requested withdrawal amount
+            withdrawal = int(input("Withdrawal amount? ")) #Requested withdrawal amount
             cash_bal = int(cash_bal) #Amount in ATM
             acc_balance = int(acc_balance) # User balance
             #validate amounts
@@ -226,7 +226,7 @@ def menu(account):
             verify, acc_balance = get_account_detail(account)
             print(f"Lodgement limit {CURRENCY}{TRANSACTION_LIMIT}")
             print(f'Current balance: {CURRENCY}{acc_balance}')
-            lodgement = int(input("Lodgement amount? \n"))
+            lodgement = int(input("Lodgement amount? "))
             cheque_balance = int(cheque_balance)
             acc_balance = int(acc_balance)
             #validate amounts
@@ -260,7 +260,7 @@ def test_splash():
     print('Sample card: 2234')
     print('Sample PIN: 3234')
     print()    
-    input("Press <Enter> to continue\n")    
+    input("Press <Enter> to continue")    
 
 
 

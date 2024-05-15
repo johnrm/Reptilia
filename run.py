@@ -318,5 +318,5 @@ def main():
                 break
 
 atm_log('code_start', 0)
-#test_splash()
+test_splash()
 main()

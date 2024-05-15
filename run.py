@@ -32,18 +32,21 @@ CHEQUE_AC = "9998"
 #Transaction limit
 TRANSACTION_LIMIT = 300
 
+
 def atm_log(action, amount):
-    time='{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-    data=[time,action,amount]
+    time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+    data = [time,action,amount]
     log = SHEET.worksheet('atm_log')
     log.append_row(data)
+
 
 def validate_number(numbers,length):
     """
     Check 'numbers' is numeric, correct length, reporting if incorrect
     """
     try:
-        [int(number) for number in numbers]
+        numbers.isnumeric()
+#        [int(number) for number in numbers]
         if len(numbers) != length:
             raise Exception
         return True
@@ -54,6 +57,7 @@ def validate_number(numbers,length):
         print(f"{len(numbers)} digits entered, {length} expected!")
         return False
 
+
 def return_card():
     """
     Return card to user
@@ -63,12 +67,14 @@ def return_card():
     print("      Have a nice day!")
     time.sleep(3)
 
+
 def pin_fail(card):
     """
     Do this when PIN is entered incorrectly
     """
-    input('PIN fail')
+    input('PIN fail\n')
   
+
 def get_card_detail(card):
     """
     Get details for the inserted Card
@@ -86,6 +92,7 @@ def get_card_detail(card):
     account = row[3]
     return "valid", pin_no, pin_count, account
 
+
 def put_card_detail(card,pin_no,pin_count):
     """
     Update details for the inserted Card
@@ -99,6 +106,7 @@ def put_card_detail(card,pin_no,pin_count):
         return
     row = cardsheet.row_values(rownum)
     cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
+
 
 def get_account_detail(account):
     """
@@ -115,6 +123,7 @@ def get_account_detail(account):
     balance = row[4]
     return "valid", balance 
 
+
 def put_account_detail(account, balance, time):
     """
     Update account balance
@@ -128,22 +137,24 @@ def put_account_detail(account, balance, time):
     row = accountsheet.row_values(rownum)
     accountsheet.update([[balance, time]], f'E{rownum}:F{rownum}')
     
+
 def card_input():
     """
     Input Card and PIN from user
     Call validation and check for PIN count
     """
-    card = input("Insert card (or enter card ID): ")
+    card = input("Insert card (or enter card ID): \n")
     if validate_number(card, 4):
         return card
     else:
         return False
 
+
 def pin_input(pin_no):
     """
     Get pin from user
     """
-    user_pin=getpass.getpass('Enter PIN (4 digits): ')
+    user_pin = getpass.getpass('Enter PIN (4 digits): ')
     if validate_number(user_pin, 4):
         if (user_pin != pin_no):
             return False
@@ -152,6 +163,7 @@ def pin_input(pin_no):
     else:
         return False
    
+
 def screen_header(function):
     os.system('cls' if os.name == 'nt' else 'clear')
     print(BANK_NAME.center(DISPLAY_WIDTH))
@@ -159,6 +171,7 @@ def screen_header(function):
     print(function.center(DISPLAY_WIDTH))
     print ("-" * DISPLAY_WIDTH)
     print()    
+
 
 def menu(account):
     """
@@ -175,9 +188,9 @@ def menu(account):
         print("0> Cancel\n")
 
         #Menu selection
-        choice=input("Select: ")
+        choice = input("Select: \n")
 
-        if choice=="1":
+        if choice == "1":
             #Account Balance
             atm_log('balance', account)
             screen_header("Account balance")
@@ -185,7 +198,7 @@ def menu(account):
             print(f'Current balance: {CURRENCY}{balance}'.center(DISPLAY_WIDTH))
             time.sleep(3)
 
-        elif choice=="2":
+        elif choice == "2":
             #Cash Withdrawal
             atm_log('withdrawal', account)
             screen_header("Withdraw cash")
@@ -193,7 +206,7 @@ def menu(account):
             verify, acc_balance = get_account_detail(account)
             print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
             print(f'Available funds : {CURRENCY}{acc_balance}')
-            withdrawal = int(input("Withdrawal amount? ")) #Requested withdrawal amount
+            withdrawal = int(input("Withdrawal amount? \n")) #Requested withdrawal amount
             cash_bal = int(cash_bal) #Amount in ATM
             acc_balance = int(acc_balance) # User balance
             #validate amounts
@@ -201,11 +214,11 @@ def menu(account):
             new_acc_balance = acc_balance - withdrawal
             print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
             atm_log('withdrawal', withdrawal)
-            time_stamp=('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+            time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
             put_account_detail(account, new_acc_balance, time_stamp)
             put_account_detail(CASH_AC, new_cash_balance, time_stamp)
 
-        elif choice=="3":
+        elif choice == "3":
             #Lodgement
             atm_log('lodgement', account)
             screen_header("Lodge Cheque")
@@ -213,7 +226,7 @@ def menu(account):
             verify, acc_balance = get_account_detail(account)
             print(f"Lodgement limit {CURRENCY}{TRANSACTION_LIMIT}")
             print(f'Current balance: {CURRENCY}{acc_balance}')
-            lodgement = int(input("Lodgement amount? "))
+            lodgement = int(input("Lodgement amount? \n"))
             cheque_balance = int(cheque_balance)
             acc_balance = int(acc_balance)
             #validate amounts
@@ -221,23 +234,24 @@ def menu(account):
             new_acc_balance = acc_balance + lodgement
             print(f'New balance    : {CURRENCY}' + str(new_acc_balance))         
             atm_log('lodgement', lodgement)
-            time_stamp=('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+            time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
             put_account_detail(account, new_acc_balance, time_stamp)
             put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
 
-        elif choice=="4":
+        elif choice == "4":
             atm_log('statement', account)
             print("\nPrint Statement unimplemented")
             time.sleep(1)
 
-        elif choice=="5":
+        elif choice == "5":
             atm_log('pin_change', account)
             print("\nChange PIN unimplemented")
             time.sleep(1)
 
-        elif (choice=="0" or choice==""):
+        elif (choice == "0" or choice == ""):
             atm_log('exit', account)
             break
+
 
 def test_splash():
     screen_header("ATM simulator")
@@ -246,7 +260,8 @@ def test_splash():
     print('Sample card: 2234')
     print('Sample PIN: 3234')
     print()    
-    input("Press <Enter> to continue")    
+    input("Press <Enter> to continue\n")    
+
 
 
 def main():

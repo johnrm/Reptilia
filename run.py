@@ -4,6 +4,7 @@ import getpass
 import gspread
 import datetime
 from google.oauth2.service_account import Credentials
+from colorama import Fore, Back, Style
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -72,7 +73,8 @@ def pin_fail(card):
     """
     Do this when PIN is entered incorrectly
     """
-    input('PIN fail')
+    input(Fore.BLACK + Back.WHITE +'PIN fail')
+    print(Style.RESET_ALL)
   
 
 def get_card_detail(card):
@@ -318,5 +320,5 @@ def main():
                 break
 
 atm_log('code_start', 0)
-test_splash()
+#test_splash()
 main()

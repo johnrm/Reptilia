@@ -4,7 +4,7 @@ import getpass
 import gspread
 import datetime
 from google.oauth2.service_account import Credentials
-from colorama import Fore, Back, Style
+#from colorama import Fore, Back, Style
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -41,9 +41,18 @@ def atm_log(action, amount):
     log.append_row(data)
 
 
-def validate_number(numbers,length):
+def screen_header(function):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(BANK_NAME.center(DISPLAY_WIDTH))
+    print ("-" * DISPLAY_WIDTH)
+    print(function.center(DISPLAY_WIDTH))
+    print ("-" * DISPLAY_WIDTH)
+    print()    
+
+
+def validate_number(numbers, length):
     """
-    Check 'numbers' is numeric, correct length, reporting if incorrect
+    Validate 'numbers' based on fed parameters
     """
     try:
         numbers.isnumeric()
@@ -58,14 +67,16 @@ def validate_number(numbers,length):
         return False
 
 
-def return_card():
+def card_input():
     """
-    Return card to user
+    Input Card and PIN from user
+    Call validation and check for PIN count
     """
-    screen_header("ATM")
-    print("    Please take your card")
-    print("      Have a nice day!")
-    time.sleep(3)
+    card = input("Insert card (or enter card ID): ")
+    if validate_number(card, 4):
+        return card
+    else:
+        return False
 
 
 def get_card_detail(card):
@@ -86,6 +97,20 @@ def get_card_detail(card):
     return "valid", pin_no, pin_count, account
 
 
+def pin_input(pin_no):
+    """
+    Get pin from user
+    """
+    user_pin = getpass.getpass('Enter PIN (4 digits): ')
+    if validate_number(user_pin, 4):
+        if (user_pin != pin_no):
+            return False
+        else:
+            return True
+    else:
+        return False
+   
+
 def put_card_detail(card,pin_no,pin_count):
     """
     Update details for the inserted Card
@@ -99,6 +124,16 @@ def put_card_detail(card,pin_no,pin_count):
         return
     row = cardsheet.row_values(rownum)
     cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
+
+
+def return_card():
+    """
+    Return card to user
+    """
+    screen_header("ATM")
+    print("    Please take your card")
+    print("      Have a nice day!")
+    time.sleep(3)
 
 
 def get_account_detail(account):
@@ -129,41 +164,6 @@ def put_account_detail(account, balance, time):
     row = accountsheet.row_values(rownum)
     accountsheet.update([[balance, time]], f'E{rownum}:F{rownum}')
     
-
-def card_input():
-    """
-    Input Card and PIN from user
-    Call validation and check for PIN count
-    """
-    card = input("Insert card (or enter card ID): ")
-    if validate_number(card, 4):
-        return card
-    else:
-        return False
-
-
-def pin_input(pin_no):
-    """
-    Get pin from user
-    """
-    user_pin = getpass.getpass('Enter PIN (4 digits): ')
-    if validate_number(user_pin, 4):
-        if (user_pin != pin_no):
-            return False
-        else:
-            return True
-    else:
-        return False
-   
-
-def screen_header(function):
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(BANK_NAME.center(DISPLAY_WIDTH))
-    print ("-" * DISPLAY_WIDTH)
-    print(function.center(DISPLAY_WIDTH))
-    print ("-" * DISPLAY_WIDTH)
-    print()    
-
 
 def withdrawal(account):
     """
@@ -211,13 +211,13 @@ def withdrawal(account):
         # Calculate new balances
         new_cash_balance = cash_balance - value
         new_acc_balance = acc_balance - value
-        print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
 
-        # Log the transaction
+        # Log the transaction to ATM log and transaction log
         atm_log('Withdrawal', value)
         time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
         put_account_detail(account, new_acc_balance, time_stamp)
         put_account_detail(CHEQUE_AC, new_cash_balance, time_stamp)
+        print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
         break
 
 
@@ -252,13 +252,13 @@ def lodgement(account):
     # Calculate new balances
     new_cheque_balance = cheque_balance + value
     new_acc_balance = acc_balance + value
-    print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
-
+    
     # Log the transaction
     atm_log('Lodgement', value)
     time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
     put_account_detail(account, new_acc_balance, time_stamp)
     put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
+    print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
 
 
 def menu(account):

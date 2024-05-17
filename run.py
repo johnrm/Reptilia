@@ -97,7 +97,7 @@ def get_card_detail(card):
     return "valid", pin_no, pin_count, account
 
 
-def pin_input(pin_no):
+def input_pin(pin_no):
     """
     Get pin from user
     """
@@ -124,6 +124,21 @@ def put_card_detail(card,pin_no,pin_count):
         return
     row = cardsheet.row_values(rownum)
     cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
+
+
+def change_pin(card):
+    atm_log("change_pin", card)
+    screen_header("Change PIN")
+    new_pin = getpass.getpass('  Enter PIN (4 digits): ')
+    validate_number(new_pin,4)
+    valid_pin = getpass.getpass('Confirm PIN (4 digits): ')
+    validate_number(valid_pin,4)
+    print('\nDo NOT forget new PIN!')
+    if (new_pin == valid_pin):
+        put_card_detail(card, new_pin, 0)
+        atm_log("pin_update", card)
+    time.sleep(3)
+    return_card()
 
 
 def return_card():
@@ -261,7 +276,7 @@ def lodgement(account):
     print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
 
 
-def menu(account):
+def menu(card, account):
     """
     Menu of user options 
     """
@@ -298,9 +313,8 @@ def menu(account):
             time.sleep(1)
 
         elif choice == "5":
-            atm_log('pin_change', account)
-            print("\nChange PIN unimplemented")
-            time.sleep(1)
+            atm_log('change_pin', account)
+            change_pin(card)
 
         elif (choice == "0" or choice == ""):
             atm_log('exit', account)
@@ -315,7 +329,6 @@ def test_splash():
     print('Sample PIN: 3234')
     print()    
     input("Press <Enter> to continue")    
-
 
 
 def main():
@@ -349,7 +362,7 @@ def main():
 
         # Increment fail count if incorrect PIN, reset if PIN is correct, then continue to Menu
         while True:
-            pin = pin_input(pin_no)
+            pin = input_pin(pin_no)
             if not pin:
                 # If PIN is incorrect
                 pin_count = int(pin_count) + 1
@@ -366,12 +379,12 @@ def main():
                 # If PIN is correct, reset fail count on card
                 atm_log('card_pin_reset', card)
                 put_card_detail(card, pin_no, 0)
-                menu(account)
+                menu(card, account)
                 return_card()
                 break
 
 atm_log('code_start', 0)
 # test_splash()
-#main()
-menu('1234')
+main()
+#menu('1234')
 #withdrawal ('1234')

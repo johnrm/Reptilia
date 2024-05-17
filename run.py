@@ -218,14 +218,43 @@ def withdrawal(account):
         print('ATM out of funds') # Inadaquete cash in ATM
         time.sleep(3)
 
+
+def lodgement(account):
+    """
+    Lodgements take place here
+    """
+    atm_log("Lodgement", account)
+    screen_header("Lodgement")
+    
+    # Find what funds are available to transact
+    verify, cheque_balance = get_account_detail(CASH_AC)
+    cheque_balance = int(cheque_balance) # Amount in ATM
+    verify, acc_balance = get_account_detail(account)
+    acc_balance = int(acc_balance) # Amount in account
+
+    # Notify trx limit
+    print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+
+    # Input and validate transaction amount
+    try:
+        value = int(input("Transaction amount? ")) # Requested amount
+    except ValueError:
+        print("Non-numeric entry!")
+        return False
+
+    if (value > TRANSACTION_LIMIT):
+        print('Exceeds transcation limit') # Transaction Limit exceeded
+        time.sleep(3)
+        return False
+
     # Validate amounts
-    new_cash_balance = cash_balance - value
-    new_acc_balance = acc_balance - value
+    new_cheque_balance = cheque_balance + value
+    new_acc_balance = acc_balance + value
     print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
-    atm_log('Withdrawal', value)
+    atm_log('Lodgement', value)
     time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
     put_account_detail(account, new_acc_balance, time_stamp)
-    put_account_detail(CASH_AC, new_cash_balance, time_stamp)
+    put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
 
 
 def menu(account):
@@ -237,9 +266,8 @@ def menu(account):
         print("1> Check Balance")
         print("2> Withdraw cash")
         print("3> Lodgement")
-        print("4> !!new lodgement!!")
-        print("5> Print Statement")
-        print("6> Change PIN")
+        print("4> Print Statement")
+        print("5> Change PIN")
         print("-" * 18)
         print("0> Cancel\n")
 
@@ -257,36 +285,15 @@ def menu(account):
         elif choice == "2":
             withdrawal(account)
 
-
         elif choice == "3":
-            # Lodgement
-            atm_log('lodgement', account)
-            screen_header("Lodge Cheque")
-            verify, cheque_balance = get_account_detail(CHEQUE_AC)
-            verify, acc_balance = get_account_detail(account)
-            print(f"Lodgement limit {CURRENCY}{TRANSACTION_LIMIT}")
-            print(f'Current balance: {CURRENCY}{acc_balance}')
-            lodgement = int(input("Lodgement amount? "))
-            cheque_balance = int(cheque_balance)
-            acc_balance = int(acc_balance)
-            # Validate amounts
-            new_cheque_balance = cheque_balance + lodgement
-            new_acc_balance = acc_balance + lodgement
-            print(f'New balance    : {CURRENCY}' + str(new_acc_balance))         
-            atm_log('lodgement', lodgement)
-            time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
-            put_account_detail(account, new_acc_balance, time_stamp)
-            put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
+            lodgement(account)
 
         elif choice == "4":
-            atm_log('!!new lodgement!!', account)
-
-        elif choice == "5":
             atm_log('statement', account)
             print("\nPrint Statement unimplemented")
             time.sleep(1)
 
-        elif choice == "6":
+        elif choice == "5":
             atm_log('pin_change', account)
             print("\nChange PIN unimplemented")
             time.sleep(1)

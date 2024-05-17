@@ -68,14 +68,6 @@ def return_card():
     time.sleep(3)
 
 
-def pin_fail(card):
-    """
-    Do this when PIN is entered incorrectly
-    """
-    input(Fore.BLACK + Back.WHITE +'PIN fail')
-    print(Style.RESET_ALL)
-  
-
 def get_card_detail(card):
     """
     Get details for the inserted Card
@@ -178,7 +170,6 @@ def withdrawal(account):
     Withdrawal transaction takes place here
     """
     atm_log("Withdrawal", account)
-    screen_header("Withdrawal")
     
     # Find what funds are available to transact
     verify, cash_balance = get_account_detail(CASH_AC)
@@ -186,37 +177,48 @@ def withdrawal(account):
     verify, acc_balance = get_account_detail(account)
     acc_balance = int(acc_balance) # Amount in account
 
-    # Notify if inadequate balance
-    print(f'Available funds : {CURRENCY}{acc_balance}')
-    if  (acc_balance <= 0):
-        print('Inadequate funds, balance: ' + CURRENCY + str(acc_balance))
-        time.sleep(3)
-        return False
-
-    # Notify trx limit
-    print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
-
-    # Input and validate transaction amount
-    try:
-        print(f'Whole amount, multiples of {CURRENCY}10 only')
-        value = int(input("Transaction amount? ")) # Requested amount
-        if (divmod(value,10)[1] != 0) :
-            print('Multiples of 10 only')
+    while True:
+        # Notify if inadequate balance
+        screen_header("Withdrawal")
+        print(f'Available funds : {CURRENCY}{acc_balance}')
+        if  (acc_balance <= 0):
+            print('Inadequate funds')
             time.sleep(3)
-            return False
-    except ValueError:
-        print("Non-numeric entry!")
-        return False
+            break
 
-    if (value > TRANSACTION_LIMIT):
-        print('Exceeds transcation limit') # Transaction Limit exceeded
+        # Notify trx limit
+        print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+
+        # Input and validate transaction amount
+        try:
+            print(f'Whole amount, multiples of {CURRENCY}10 only')
+            value = int(input("Transaction amount? ")) # Requested amount
+            if (divmod(value,10)[1] != 0) :
+                print('Multiples of 10 only')
+                time.sleep(3)
+        except ValueError:
+            print("Non-numeric entry!")
+            return False
+
+        if (value > TRANSACTION_LIMIT):
+            print('Exceeds transcation limit') # Transaction Limit exceeded
+        elif  ((acc_balance - value) <= 0):
+            print('Exceeds available funds') # Inadequate funds in account
+        elif ((cash_balance - value) <= 0):
+            print('ATM out of funds') # Inadaquete cash in ATM
         time.sleep(3)
-    elif  ((acc_balance - value) <= 0):
-        print('Exceeds available funds') # Inadequate funds in account
-        time.sleep(3)
-    elif ((cash_balance - value) <= 0):
-        print('ATM out of funds') # Inadaquete cash in ATM
-        time.sleep(3)
+
+        # Calculate new balances
+        new_cash_balance = cash_balance - value
+        new_acc_balance = acc_balance - value
+        print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
+
+        # Log the transaction
+        atm_log('Withdrawal', value)
+        time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        put_account_detail(account, new_acc_balance, time_stamp)
+        put_account_detail(CHEQUE_AC, new_cash_balance, time_stamp)
+        break
 
 
 def lodgement(account):
@@ -247,10 +249,12 @@ def lodgement(account):
         time.sleep(3)
         return False
 
-    # Validate amounts
+    # Calculate new balances
     new_cheque_balance = cheque_balance + value
     new_acc_balance = acc_balance + value
     print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
+
+    # Log the transaction
     atm_log('Lodgement', value)
     time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
     put_account_detail(account, new_acc_balance, time_stamp)
@@ -357,7 +361,6 @@ def main():
                     time.sleep(3)
                     break
                 atm_log('card_pin_fail', card)
-                pin_fail(card)
                 break
             else:
                 # If PIN is correct, reset fail count on card

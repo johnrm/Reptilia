@@ -35,9 +35,22 @@ TRANSACTION_LIMIT = 300
 
 
 def atm_log(action, amount):
+    """
+    Log and Timestamp actions on the ATM
+    """
     time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
     data = [time,action,amount]
     log = SHEET.worksheet('atm_log')
+    log.append_row(data)
+
+
+def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
+    """
+    Log the transaction for accounting and statement purposes
+    """
+    time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+    data = [time, account, transaction_type, amount, medium, new_acc_balance]
+    log = SHEET.worksheet('transactions')
     log.append_row(data)
 
 
@@ -129,9 +142,9 @@ def put_card_detail(card,pin_no,pin_count):
 def change_pin(card):
     atm_log("change_pin", card)
     screen_header("Change PIN")
-    new_pin = getpass.getpass('  Enter PIN (4 digits): ')
+    new_pin = getpass.getpass('   Enter new PIN (4 digits): ')
     validate_number(new_pin,4)
-    valid_pin = getpass.getpass('Confirm PIN (4 digits): ')
+    valid_pin = getpass.getpass('Re-Enter new PIN (4 digits): ')
     validate_number(valid_pin,4)
     print('\nDo NOT forget new PIN!')
     if (new_pin == valid_pin):
@@ -180,11 +193,11 @@ def put_account_detail(account, balance, time):
     accountsheet.update([[balance, time]], f'E{rownum}:F{rownum}')
     
 
-def withdrawal(account):
+def withdraw(account):
     """
     Withdrawal transaction takes place here
     """
-    atm_log("Withdrawal", account)
+    atm_log("Withdraw", account)
     
     # Find what funds are available to transact
     verify, cash_balance = get_account_detail(CASH_AC)
@@ -224,8 +237,9 @@ def withdrawal(account):
         time.sleep(3)
 
         # Calculate new balances
-        new_cash_balance = cash_balance - value
-        new_acc_balance = acc_balance - value
+        value = (-1 * value)         # Flip the sign to allow withdrawal reduce account balance
+        new_cash_balance = cash_balance + value
+        new_acc_balance = acc_balance + value
 
         # Log the transaction to ATM log and transaction log
         atm_log('Withdrawal', value)
@@ -233,14 +247,15 @@ def withdrawal(account):
         put_account_detail(account, new_acc_balance, time_stamp)
         put_account_detail(CHEQUE_AC, new_cash_balance, time_stamp)
         print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
+        transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
         break
 
 
-def lodgement(account):
+def lodge(account):
     """
     Lodgements take place here
     """
-    atm_log("Lodgement", account)
+    atm_log("Lodge", account)
     screen_header("Lodgement")
     
     # Find what funds are available to transact
@@ -274,6 +289,7 @@ def lodgement(account):
     put_account_detail(account, new_acc_balance, time_stamp)
     put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
     print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
+    transaction_log(account, "lodgement", value, "cheque", new_acc_balance)
 
 
 def menu(card, account):
@@ -302,21 +318,26 @@ def menu(card, account):
             time.sleep(3)
 
         elif choice == "2":
-            withdrawal(account)
+            # Withdraw Cash
+            withdraw(account)
 
         elif choice == "3":
-            lodgement(account)
+            # Lodge Cheque
+            lodge(account)
 
         elif choice == "4":
+            # Display statement
             atm_log('statement', account)
             print("\nPrint Statement unimplemented")
             time.sleep(1)
 
         elif choice == "5":
+            # Change card PIN
             atm_log('change_pin', account)
             change_pin(card)
 
         elif (choice == "0" or choice == ""):
+            # Exit the menu
             atm_log('exit', account)
             break
 

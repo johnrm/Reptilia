@@ -4,7 +4,6 @@ import getpass
 import gspread
 import datetime
 from google.oauth2.service_account import Credentials
-#from colorama import Fore, Back, Style
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -58,29 +57,21 @@ def statement(account):
     """
     Statement display
     """
-    transactions = SHEET.worksheet("transactions")
-    transaction = transactions.col_values(2)
-    rownum = transaction.index(account) + 1
-    print('rownum: ', rownum)
-    row = transactions.row_values(rownum)
-    print('row: ', row)
-    try:
-        rownum = transaction.index(account) + 1
-    except ValueError:
-        print('Statement ValueError')
-        return False
-    row = transactions.row_values(rownum)
+    atm_log("Statement", account)
+    screen_header("Statement")
+    transactions = SHEET.worksheet("transactions") # Sheet
     rows = transactions.get_all_values()
-    sheet_len = len(rows)
-    print (sheet_len)
-    print(row[sheet_len -2:sheet_len])
-    time.sleep(1)
-    input('whah?')
+    print ("Date".ljust(15," "), CURRENCY.rjust(14," "))
+    balance = 0
     for row in rows:
         if (row[1] == account):
-            print (row) 
-    time.sleep(1)
-    input('whah?')
+            date = row[0]
+            date = date[8:10] + "-" + date[5:7] + "-" + date[2:4]
+            amount = row[3]
+            balance = row[5]            
+            print (date.ljust(15," "), amount.rjust(14," "))
+    print('Balance:' , str(balance).rjust(21," "))
+    time.sleep(5)
 
 
 def screen_header(function):
@@ -433,7 +424,5 @@ def main():
                 break
 
 atm_log('code_start', 0)
-# test_splash()
-#main()
-menu('2234','1234')
-#withdrawal ('1234')
+test_splash()
+main()

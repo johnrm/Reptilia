@@ -418,7 +418,7 @@ def main():
             continue
         elif (int(pin_count) > 0):
             atm_log('card_warning_pin_count', card)
-            print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempt{'s' if (MAX_PIN_FAIL - int(pin_count) > 1) else ''} left")
+            print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempts left")
 
         # Increment fail count if incorrect PIN, reset if PIN is correct, then continue to Menu
         while True:
@@ -426,6 +426,7 @@ def main():
             if not pin:
                 # If PIN is incorrect
                 pin_count = int(pin_count) + 1
+                print(f"Incorrect PIN {MAX_PIN_FAIL - int(pin_count)} attempts left")
                 put_card_detail(card, pin_no, pin_count)
                 if pin_count == 3:
                     # Card retained

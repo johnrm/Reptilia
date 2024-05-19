@@ -242,7 +242,7 @@ def withdraw(account):
     Withdrawal transaction takes place here
     account - account to remove finds from
     """
-    atm_log("Withdraw", account)
+    atm_log("withdraw", account)
     
     # Find what funds are available to transact
     verify, cash_balance = get_account_detail(CASH_AC)
@@ -301,7 +301,7 @@ def lodge(account):
     Lodgements take place here
     account - account having funds added
     """
-    atm_log("Lodge", account)
+    atm_log("lodge", account)
     screen_header("Lodgement")
     
     # Find what funds are available to transact
@@ -359,7 +359,7 @@ def menu(card, account):
 
         if choice == "1":
             # Account Balance
-            atm_log('balance', account)
+            atm_log('menu_balance', account)
             screen_header("Account balance")
             verify, balance = get_account_detail(account)
             print(f'Current balance: {CURRENCY}{balance}'.center(DISPLAY_WIDTH))
@@ -367,25 +367,27 @@ def menu(card, account):
 
         elif choice == "2":
             # Withdraw Cash
+            atm_log('menu_withdraw', account)
             withdraw(account)
 
         elif choice == "3":
             # Lodge Cheque
+            atm_log('menu_lodge', account)
             lodge(account)
 
         elif choice == "4":
             # Display statement
-            atm_log('statement', account)
+            atm_log('menu_statement', account)
             statement(account)
 
         elif choice == "5":
             # Change card PIN
-            atm_log('change_pin', account)
+            atm_log('menu_change_pin', account)
             change_pin(card)
 
         elif (choice == "0" or choice == ""):
             # Exit the menu
-            atm_log('exit', account)
+            atm_log('menu_exit', account)
             break
 
 

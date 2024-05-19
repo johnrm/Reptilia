@@ -33,12 +33,14 @@ CHEQUE_AC = "9998"
 TRANSACTION_LIMIT = 300
 
 
-def atm_log(action, amount):
+def atm_log(action, data):
     """
     Log and Timestamp actions on the ATM
+    action - The current machine action
+    data - differs depending on machine action
     """
     time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-    data = [time,action,amount]
+    data = [time,action,data]
     log = SHEET.worksheet('atm_log')
     log.append_row(data)
 
@@ -46,6 +48,11 @@ def atm_log(action, amount):
 def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
     """
     Log the transaction for accounting and statement purposes
+    account - the account for which the transaction is being logged
+    transaction_type - transaction type
+    amount - value of  transaction
+    medium - cash or cheque
+    new_acc_balance - new account balance based on this transaction
     """
     time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
     data = [time, account, transaction_type, amount, medium, new_acc_balance]
@@ -56,6 +63,8 @@ def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
 def statement(account):
     """
     Statement display
+    Displays transactions and account balance for the current card/account
+    account - the account for which a statement is required
     """
     atm_log("Statement", account)
     screen_header("Statement")
@@ -75,6 +84,10 @@ def statement(account):
 
 
 def screen_header(function):
+    """
+    Displays the screen header for all screens
+    function - the text to be highlighted
+    """
     os.system('cls' if os.name == 'nt' else 'clear')
     print(BANK_NAME.center(DISPLAY_WIDTH))
     print ("-" * DISPLAY_WIDTH)
@@ -86,6 +99,8 @@ def screen_header(function):
 def validate_number(numbers, length):
     """
     Validate 'numbers' based on fed parameters
+    numbers - the number to be validated
+    length - length/number of digits
     """
     try:
         numbers.isnumeric()
@@ -103,7 +118,6 @@ def validate_number(numbers, length):
 def card_input():
     """
     Input Card and PIN from user
-    Call validation and check for PIN count
     """
     card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
@@ -116,6 +130,7 @@ def get_card_detail(card):
     """
     Get details for the inserted Card
     Tell calling function if card is valid/invalid
+    card - card number to be checked
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
@@ -133,6 +148,7 @@ def get_card_detail(card):
 def input_pin(pin_no):
     """
     Get pin from user
+    pin_no - 
     """
     user_pin = getpass.getpass('Enter PIN (4 digits): ')
     if validate_number(user_pin, 4):
@@ -160,12 +176,16 @@ def put_card_detail(card,pin_no,pin_count):
 
 
 def change_pin(card):
+    """
+    Function to change PIN on individual card.
+    card - Card number is passed in.
+    """
     atm_log("change_pin", card)
     screen_header("Change PIN")
     new_pin = getpass.getpass('   Enter new PIN (4 digits): ')
-    validate_number(new_pin,4)
+    validate_number(new_pin, 4)
     valid_pin = getpass.getpass('Re-Enter new PIN (4 digits): ')
-    validate_number(valid_pin,4)
+    validate_number(valid_pin, 4)
     print('\nDo NOT forget new PIN!')
     if (new_pin == valid_pin):
         put_card_detail(card, new_pin, 0)
@@ -176,7 +196,7 @@ def change_pin(card):
 
 def return_card():
     """
-    Return card to user
+    Return card to user at end of session
     """
     screen_header("ATM")
     print("    Please take your card")
@@ -187,6 +207,7 @@ def return_card():
 def get_account_detail(account):
     """
     Get and return account detail
+    account - the account to be retrieved
     """
     accountsheet = SHEET.worksheet("accounts")
     accountlist = accountsheet.col_values(1)
@@ -201,7 +222,10 @@ def get_account_detail(account):
 
 def put_account_detail(account, balance, time):
     """
-    Update account balance
+    Update account balance to gsheet
+    account - account to be updated
+    balance - new balance
+    time - timestamp for the update
     """
     accountsheet = SHEET.worksheet("accounts")
     accountlist = accountsheet.col_values(1)
@@ -216,6 +240,7 @@ def put_account_detail(account, balance, time):
 def withdraw(account):
     """
     Withdrawal transaction takes place here
+    account - account to remove finds from
     """
     atm_log("Withdraw", account)
     
@@ -274,6 +299,7 @@ def withdraw(account):
 def lodge(account):
     """
     Lodgements take place here
+    account - account having funds added
     """
     atm_log("Lodge", account)
     screen_header("Lodgement")
@@ -314,7 +340,9 @@ def lodge(account):
 
 def menu(card, account):
     """
-    Menu of user options 
+    Menu of user options
+    card - current users card
+    account - current users account
     """
     while True:
         screen_header("ATM Options")
@@ -359,16 +387,6 @@ def menu(card, account):
             # Exit the menu
             atm_log('exit', account)
             break
-
-
-def test_splash():
-    screen_header("ATM simulator")
-    print('For testing purposes...')
-    print()    
-    print('Sample card: 2234')
-    print('Sample PIN: 3234')
-    print()    
-    input("Press <Enter> to continue")    
 
 
 def main():
@@ -423,6 +441,5 @@ def main():
                 return_card()
                 break
 
-atm_log('code_start', 0)
-test_splash()
+atm_log('code_start', 0) # Log program startup
 main()

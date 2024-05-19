@@ -54,6 +54,35 @@ def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
     log.append_row(data)
 
 
+def statement(account):
+    """
+    Statement display
+    """
+    transactions = SHEET.worksheet("transactions")
+    transaction = transactions.col_values(2)
+    rownum = transaction.index(account) + 1
+    print('rownum: ', rownum)
+    row = transactions.row_values(rownum)
+    print('row: ', row)
+    try:
+        rownum = transaction.index(account) + 1
+    except ValueError:
+        print('Statement ValueError')
+        return False
+    row = transactions.row_values(rownum)
+    rows = transactions.get_all_values()
+    sheet_len = len(rows)
+    print (sheet_len)
+    print(row[sheet_len -2:sheet_len])
+    time.sleep(1)
+    input('whah?')
+    for row in rows:
+        if (row[1] == account):
+            print (row) 
+    time.sleep(1)
+    input('whah?')
+
+
 def screen_header(function):
     os.system('cls' if os.name == 'nt' else 'clear')
     print(BANK_NAME.center(DISPLAY_WIDTH))
@@ -328,8 +357,7 @@ def menu(card, account):
         elif choice == "4":
             # Display statement
             atm_log('statement', account)
-            print("\nPrint Statement unimplemented")
-            time.sleep(1)
+            statement(account)
 
         elif choice == "5":
             # Change card PIN
@@ -406,6 +434,6 @@ def main():
 
 atm_log('code_start', 0)
 # test_splash()
-main()
-#menu('1234')
+#main()
+menu('2234','1234')
 #withdrawal ('1234')

@@ -1,339 +1,214 @@
 # Repilia ATM 
 ## Index
 * [Live site](#live-site)
-* [Zúm Pizza](#zúm-pizza)
-* [Site Features](#site-features)
-* [Wireframe](#wireframe)
-* [Testing](#testing)
+* [Reptilia ATM](#reptilia-atm)
+* [Program Features](#program-features)
+* [Flowchart](#flowchart)
+* [Functional Testing](#functional-testing)
 * [Bugs](#bugs)
-* [Deployment](#deployment)
-* [Credits](#credits)
-* [Validate html and CSS](#validate-html-and-css)
+* [Technologies used and Deployment](#technologies-used-and-deployment)
+* [Credits and APIs](#credits-and-apis)
+
 
 ## Live Site
-https://johnrm.github.io/zumpizza/
-<br>
-([Back to top](#index))<br>
-
-## Zúm Pizza
-The Client, 'Zúm Pizza',  has requested a website built to showcase products and services.<br>
-Zúm Pizza provide pop-up Pizza service on a schedule for localities similar to ice-cream van as well as local markets.<br>
-The naming comes from speed at which the pizzas cook.<br>
-Zúm Pizza also caters for corporate events and private parties.<br>
-Zúm Pizza emphasis is on excellent service and top quality product, this should be reflected in a high-quality and professional website.<br>
-Target catchment area is predominately East Cork<br>
-The purpose of the website is to establish a presence and showcase services.<br>
-<br>
-([Back to top](#index))<br>
-
-## Site features
-### Navigation
-![alt Screenshot of Header and Navigation](readme_images/header.webp)
-The business name is at the top of each page.<br>
-Small displays exhibit a Burger icon which when clicked pops-up clickable page links.
-On larger displays a horizontal row of links is shown to the respective page.<br>
-### Responsiveness
-The site has been tested for responsiveness and works well on mobile phone screen up to HD screen.
-![alt Screenshot of Responsiveness test](readme_images/amiresponsive.webp)
-### 404 page
-A 404 page is included on the site in the event of broken links or missing pages.<br>
-![alt Screenshot of 404 page](readme_images/404.webp)
-
-### The Home Page
-This page contains a lot of detail.<br>
-The head of the page contains a synopsised About alongside a typical Pizza.<br>
-We then show a list of locations where daily service is available along with a map to help customers find us.<br>
-Lastly we present the list of services available.<br>
-### The Menu Page
-This page shows sample Pizza combinations with indicative kerbside pricing.<br>
-This page shows sample Pizza combinations with indicative kerbside pricing.<br>
-### The Feedback Page
-This page shows sample and placeholder feedback from customers.<br>
-This page shows sample and placeholder feedback from customers.<br>
-### The Contact Page
-This page allows clients, both current and potential to contact Zúm.<br>
-This page allows clients, both current and potential to contact Zúm.<br>
-A contact form allows users to get in touch.<br>
-The form has the following fields...<br>
-First Name (required, type=text)<br>
-Last Name (required, type=text)<br>
-Phone number (required, type=text)<br>
-Email (required, type=email)<br>
-Message (required, type=textarea)<br>
-On successful submission, the user will be brought to a Thank you page...<br>
-![Thank you page](readme_images/thanks.webp)<br>
+https://reptilia-05304502b20b.herokuapp.com/  
 
 
-## Wireframe
-Wireframe for Mobile device provided to show onepre-development perspective of the requirement.<br>
-![Wireframe of proposed site](readme_images/wireframe.webp)<br>
-<br>
-([Back to top](#index))<br>
+Google Sheets...
+https://docs.google.com/spreadsheets/d/1pJF4NkcCANY2xROzc-1MtM-QDEhFqRVP0ZvNSLMGAZI/edit#gid=1194371383
 
-## Testing 
+([Back to top](#index))  
 
-### Responsiveness
-All pages were tested to ensure responsiveness on screen sizes from 320px and upwards as defined in [WCAG 2.1 Reflow criteria for responsive design](https://www.w3.org/WAI/WCAG21/Understanding/reflow.html) on Chrome, Edge, Firefox and Opera browsers.
 
+## Reptilia ATM
+Reptilia ATM is and ATM simulator.  
+It provides a set of features typical on a highstreet bank ATM...  
+1. Check Balance  
+2. Withdraw Cash  
+3. Lodge Cheque  
+4. Print Statement  
+5. Change PIN  
+  
+([Back to top](#index))  
+
+
+## Program features
+### Attract screen
+![alt Screenshot of Attract screen](readme_images/Attract.jpg)
+
+This is typical of any ATM, machine is waiting for a card.  
+This is a simulator and we do not have cards, so the attract screen waits for a valid card number to be entered.  
+Once this is entered, the card is authenticated with PIN.  
+Validation is in place checking that the input card number and PIN are numeric and the correct length.  
+
+The machine has 2 internal counters or accounts.  
+The first is the Cash account which keeps check of the cash remaingin in the machine. If this runs out then the machine can no longer dispense cash.  
+The second account if for Cheque Lodgements. This account keeps track of any funds entered and adds this to the users account balance.  
+
+
+### Machine Parameters
+The machine has a number of parameters by way of constants which are set on program.
+# Bank name
+BANK_NAME = "Reptilia Bank"
+# Currency
+CURRENCY = "EUR"
+# Max failed PIN on card
+MAX_PIN_FAIL = 3
+# Set display width
+DISPLAY_WIDTH = 30
+# Bank Account (Account for the ATM machine)
+CASH_AC = "9999"
+# Bank Account (Account for the ATM machine)
+CHEQUE_AC = "9998"
+# Transaction limit
+TRANSACTION_LIMIT = 300
+
+
+### Menu/Navigation
+![alt Screenshot of Menu](readme_images/Menu.jpg)
+
+The Menu sits at the core of the program.
+From here the user selects the function that they want to use.
+
+
+### Balance
+![alt Screenshot of Balance](readme_images/Balance.jpg)
+
+The user can view their balance on thie screen.
+The Balance is displayed for a few seconds, then returns to the Menu.
+
+
+### Withdraw Cash
+![alt Screenshot of Withdraw](readme_images/Withdraw.jpg)
+
+The user can 'withdraw cash' here.  
+Validation checks that the users account has enough funds.  
+The ATM is also checked to se that it has cash enough to fulfil the transaction.  
+A transaction limit is set in the code by way of a constant.  
+
+
+### Lodge Cheque
+![alt Screenshot of Lodge](readme_images/Lodge.jpg)
+
+The user can 'lodge cheques' here.  
+Validation checks only that the value is below a transaction limit then adds this amount ot the users account, and to the machine cheque account.  
+The transaction limit is set in the code by way of a constant  
+
+
+### Print Statement
+![alt Screenshot of Statement](readme_images/Statement.jpg)
+
+The user can 'Print a statement' here.  
+This displays a list of transactions for the account and shows the balance on the account.  
+The balance stays on screen for a few seconds, then rolls back back to the menu.  
+
+
+### Change PIN
+![alt Screenshot of Change PIN](readme_images/Change_PIN.jpg)
+
+The user can change the PIN on their card here.  
+The entered PIN is requested and verified by requesting a second time, which is checxked agaonst the first PIN entered.  
+  
+([Back to top](#index))  
+
+
+## Flowchart
+The flowchart details the core function of the program.  
+![Flowchart of program](readme_images/atm_flowchart.jpg)  
+  
+([Back to top](#index))  
+
+
+## Functional Testing
+
+Testing was performed to ensure all featurs on the respective pages work as designed. This was done by seelecting the appropriate option.
+
+| Menu Option        |  
+| ------------------ |  
+| 1. Balance         |  
+| 2. Withdraw Cash   |  
+| 3. Lodge Cheque    |  
+| 4. Print Statement |  
+| 5. Change PIN      |  
+| 0. Exit            |  
+
+
+### Card and PIN testing
 Steps to test:
-1. Open browser and navigate to [Zúm Pizza](https://johnrm.github.io/zumpizza/)
-2. Open the developer tools (right click and inspect)
-3. Set to responsive and decrease width to 320px
-4. Set the zoom to 50%
-5. Click and drag the responsive window to maximum width
-
-Expected:
-Website is responsive on all screen sizes and no images are pixelated or stretched.
-No horizontal scroll is present.
-No elements overlap.
-
-Actual:
-All behaviour is as expected
+1. Open application in Heroku site at head of this document.
+2. Key in valid card number and PIN
 
-Website was also opened on the following devices and no responsive issues were seen:
-- Google Pixel 4
-- Samsung Galaxy A52
-- Samsung Galaxy Tablet
-
-### Accessibility
-
-[Wave Accessibility](https://wave.webaim.org/) tool was used throughout development and for final testing of the deployed website to check for any aid accessibility testing.
-
-Testing was focused to ensure the following criteria were met:
-
-- All forms have associated labels or aria-labels so that this is read out on a screen reader to users who tab to form inputs
-- Color contrasts meet a minimum ratio as specified in [WCAG 2.1 Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
-- Heading levels are not missed or skipped to ensure the importance of content is relayed correctly to the end user
-- All content is contained within landmarks to ensure ease of use for assistive technology, allowing the user to navigate by page regions
-- All not textual content had alternative text or titles so descriptions are read out to screen readers
-- HTML page lang attribute has been set
-- Aria properties have been implemented correctly
-- WCAG 2.1 Coding best practices being followed
-
-Manual tests were also performed to ensure the website was as accessible as possible.
-
-### Lighthouse Testing
-Accessibility score was 100% for accessibility for every page in Lighthouse tools in Chrome Developertools.<br>
-index.html<br>
-![Index](readme_images/LH_index.jpg)<br>
-menu.html<br>
-![Menu](readme_images/LH_menu.jpg)<br>
-feedback.html<br>
-![Feedback](readme_images/LH_feedback.jpg)<br>
-contact.html<br>
-![Contact](readme_images/LH_contact.jpg)<br>
-thanks.html<br>
-![Thanks](readme_images/LH_thanks.jpg)<br>
-404.html<br>
-![404](readme_images/LH_404.jpg)<br>
-<br>
+Expected:  
+If card is non numeric, error is flagged and control comes back to input.  
+If card is not 4 digits, error is flagged and control comes back to input.  
+If card number is invalid, error is flagged and control comes back to input.  
+  
+If PIN is non-numeric, error is flagged and control comes back to input.  
+If PIN is not 4 digits, error is flagged and control comes back to input.  
+If PIN failed count is 3, user is notified to contact bank.  
+If PIN fail reaches 3, user is notified that card is retained.  
+If PIN fails but lower than 3, user is notified of remaining atempts.  
+If PIN is successful, pin fail count is reset to 0, and transaction progresses.  
 
-### Functional Testing
-
-**Navigation Links**
-
-Testing was performed to ensure all navigation links on the respective pages navigated to the correct pages as per design. This was done by clicking on the navigation links on each page.
-
-| Navigation Link | Page to Load    |
-| --------------- | --------------- |
-| Home            | index.html      |
-| Menu            | menu.html       |
-| Feedback        | feedback.html   |
-| Contact         | contact.html    |
-
-Links on all pages navigated to the correct pages as expected.
-
-**Form Testing**
+Actual:  
+All behaviour is as expected  
 
-The contact page was tested to ensure functionality was as expected for both correct and incorrect data input as follows...
 
-**Test one - Correct Inputs**
+### Balance  
+1. Select Balance opton in Menu.  
+2. Balance is displayed on screen for a number of seconds.  
+3. Control returns to Menu  
 
-Steps to test:
+Expected:  
+Balance is displayed for a few seconds.  
 
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. On the form input the following data:
-   - First Name: John
-   - Last Name: Doe
-   - Phone number: 01-234 5678
-   - Email: john.doe@test.com
-   - Comment: This is a test
-3. Click Submit
+Actual:  
+All behaviour is as expected  
 
-Expected:
-The form submits with no warnings or errors and user is redirected to thanks.html confirmation page.
 
-Actual:
-Website behaved as expected with no errors or warnings and redirected to thanks.html.
+### Withdraw cash  
 
-**Test Two - Missing Required Field First Name**
+Actual:  
+All behaviour is as expected  
 
-Steps to test:
 
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. On the form input the following data:
-   - First Name:
-   - Last Name: Doe
-   - Phone number: 01-234 5678
-   - Email: john.doe@test.com
-   - Comment: This is a test.
-3. Click Submit
+### Lodge Cheque  
 
-Expected:
-The form does not submit and an message 'Please fill out this field' is displayed to tell the user that the field is required.
+Actual:  
+All behaviour is as expected  
 
-Actual:
-Website behaved as expected, error message was displayed and the form did not submit.
 
-**Test Three - Missing Required Field Last Name**
+### Test devices  
+Program was also tested on...  
+- Google Pixel 4  
+- Dell Latitude Laptop  
 
-Steps to test:
+Actual:  
+All behaviour is as expected  
 
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. On the form input the following data:
-   - First Name: John
-   - Last Name:
-   - Phone number: 01-234 5678
-   - Email: john.doe@test.com
-   - Comment: This is a test.
-3. Click Submit
-
-Expected:
-The form does not submit and an message 'Please fill out this field' is displayed to tell the user that the field is required.
-
-Actual:
-Website behaved as expected, error message was displayed and the form did not submit.
-
-**Test Four - Missing Required Field Email**
-
-Steps to test:
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. On the form input the following data:
-   - First Name: John
-   - Last Name: Doe
-   - Phone number: 01-234 5678
-   - Email:
-   - Comment: This is a test.
-3. Click Submit
 
-Expected:
-The form does not submit and an message 'Please fill out this field' is displayed to tell the user that the field is required.
+## Bugs  
+Most bugs were from syntax errors along the way, and from trial/error as I learned the language on he way.  
+Generally, once I found how a coding feature worked and tested, I figured out how to implement it.  
 
-Actual:
-Website behaved as expected, error message was displayed and the form did not submit.
+([Back to top](#index))
 
-**Test Five - Incorrect email format**
 
-Steps to test:
+## Technologies used and Deployment  
+Site code sits in this Github repository.  
+The development IDE used is Gitpod.  
+Code commits are pushed to Github as the code develops with brief relevant comments.  
+Deployment is on Heroku using standard Heroku deployment processes.  
+  
+([Back to top](#index))  
 
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. On the form input the following data:
-   - First Name: John
-   - Last Name: Doe
-   - Phone number: 01-234 5678
-   - Email: john.doetest.com
-   - Comment: This is a test.
-3. Click Submit
 
-Expected:
-The form does not submit and an Error is displayed to tell the user that a valid email is required and the format it should be in.
-
-Actual:
-Website behaved as expected, error message was displayed and the form did not submit.
-
-**Footer Social Media Icons / Links**
-
-Testing was performed on the Font Awesome Social Media icons in the footer to ensure that each one opened in a new tab.
-
-Each item opened a new tab when clicked as expected and correct hover color was present.
-
-Testing was performed on the phone number in the contact information section of the footer to ensure behaviour was as expected.
-
-**Test Phone Number**
-
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. Click the phone number - 086 123 4567
-
-Expected:
-A window is opened asking which applicatin you would like to call from.
-
-Actual:
-Behavior was as expected and the window presented an application picker.
-
-
-**Test Email Link**
-1. Navigate to [Zúm Pizza - Contact Page](https://johnrm.github.io/zumpizza/contact.html)
-2. Click the email address (tasty@zum.pizza)
-
-Expected:
-A windows popup is displayed asking what application you would like to send a mail from or your default email application is opened.
-
-Actual:
-Behavior was as expected and Windows default email application was opened ready to send an email to the target address.
-<br>
-([Back to top](#index))<br>
-
-## Bugs
-This was a first project so there were number of bugs in the code.<br>
-There were layout issues throughout which were remedied from research online and some trial and error.<br>
-This resulted from lack of understanding of Flexbox but this is a lot clearer now.<br>
-Flexbox Issues were principally on index.html but have been remedied.<br>
-<br>
-Foreground text on menu.html was barely visible regardless of font changes.<br>
-Updating CSS for '.borderpizza' with 'background-color: rgba(0, 0, 0, .4);' and 'background-blend-mode: multiply;' resolved this.<br>
-<br>
-Not a bug per se, but there was a Validation issue with iframe which is detailed in Validation section ([here](#validate-html-and-css))<br>
-<br>
-Again, not a bug but validation of the thanks page was failing as I had width=100% and height=auto on the video element.<br>
-Removing these and placing in CSS corrected this.<br>
-<br>
-([Back to top](#index))<br>
-
-## Deployment
-Site code sits in this Github repository<br>
-The development IDE used is Gitpod.<br>
-Code commits are pushed to Github as the code develops with brief relevant comments.<br>
-The live public site is published via Github Pages as follows...<br>
-In Github, from the Dashboard, navigate to 'johnrm/zumpizza' repository.<br>
-Select Settings > Under Code and Automation, select Pages (Github pages)<br>
-Under build and deployment, select the 'main' branch.<br>
-Click Save.<br>
-After a few minutes the site deploys is accessible here...<br>
-https://johnrm.github.io/zumpizza/<br>
-<br>
-([Back to top](#index))<br>
-
-## Credits
-
-Favicons courtesy of favicon.io
-
-pizza_wallpaper.webp - Courtesy of Adobe. Art by Ngupakarti
-
-uncooked.webp - Courtesy of Adobe
-
-classic-cheese-pizza.webp, mixkit-close-up-shot-of-a-pepperoni-pizza-44001-medium.mp4 courtesy of www.pexels.com
-
-404.webp courtesy of James Longman @JamesAALongman
-
-Social Media code and some small code snippets were taken from CI Love Running Project.
-
-([Back to top](#index))<br>
-
-## Validate html and CSS
-HTML validation was successful with official W3C validator with 1 exception.<br>
-<br>
-Index.html validation fails on iframe width percentage. However, the code works without issue.
-
-```
-                <iframe
-                src="https://www.google.com/maps/d/embed?mid=1vGMCsnZHs91CGv4S2h5phSu21rrh6fM&hl=en&ehbc=2E312F"
-                width="100%" height="250"></iframe>
-```
-
-![Validation Error](readme_images/validation_error.webp)<br>
-<br>
-<br>
-CSS validation passes the official(Jigsaw) validator but with a warning on Google Fonts...
-![CSS Warning](readme_images/css_warning.webp)<br>
-<br>
-([Back to top](#index))<br>
+## Credits and APIs  
+os - This is used to clear the display when repainting the screen.  
+time - Used for sleep feature to pause display for a period.  
+getpass - This is used to hide PIN inputs.  
+gspread - Enables manipulation of Google Sheets to store all transactional data.  
+datetime - To generate timestamps on transactions and activities.  
+google.oauth2.service_account - To import Google credentials for access to gspread(Google Sheets)  
+  
+([Back to top](#index))  

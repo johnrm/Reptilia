@@ -190,6 +190,11 @@ All behaviour is as expected
 ## Bugs  
 Most bugs were from syntax errors along the way, and from trial/error as I learned the language on he way.  
 Generally, once I found how a coding feature worked and tested, I figured out how to implement it.  
+  
+Not a bug, but there are delays with read/writ from Google sheets.  
+This introduces small delays at times but is outside our control.
+
+Typeahead is possible into keyboard buffer, but not advised. It is best to wait for the outcome of any input.  
 
 ([Back to top](#index))
 

@@ -220,10 +220,10 @@ def get_account_detail(account):
     try:
         rownum = accountlist.index(account) + 1
     except ValueError:
-        return "invalid", 0
+        return False
     row = accountsheet.row_values(rownum)
     balance = row[4]
-    return "valid", balance 
+    return balance 
 
 
 def put_account_detail(account, balance, time):
@@ -246,14 +246,14 @@ def put_account_detail(account, balance, time):
 def withdraw(account):
     """
     Withdrawal transaction takes place here
-    account - account to remove finds from
+    account - account to remove cash from
     """
     atm_log("withdraw", account)
     
     # Find what funds are available to transact
-    verify, cash_balance = get_account_detail(CASH_AC)
+    cash_balance = get_account_detail(CASH_AC)
     cash_balance = int(cash_balance) # Amount in ATM
-    verify, acc_balance = get_account_detail(account)
+    acc_balance = get_account_detail(account)
     acc_balance = int(acc_balance) # Amount in account
 
     while True:
@@ -272,23 +272,31 @@ def withdraw(account):
         try:
             print(f'Whole amount, multiples of {CURRENCY}10 only')
             value = int(input("Transaction amount? ")) # Requested amount
-            if (divmod(value,10)[1] != 0) :
+            if (divmod(value,10)[1] != 0) or not int(value):
                 print('Multiples of 10 only')
                 time.sleep(3)
+                break
         except ValueError:
-            print("Non-numeric entry!")
-            return False
+            print("Non-numeric, decimal or Null entry!")
+            time.sleep(3)
+            break
 
         if (value > TRANSACTION_LIMIT):
             print('Exceeds transcation limit') # Transaction Limit exceeded
+            time.sleep(3)
+            break
         elif  ((acc_balance - value) <= 0):
-            print('Exceeds available funds') # Inadequate funds in account
+            print('Exceeds available funds') # Insufficient funds in account
+            time.sleep(3)
+            break
         elif ((cash_balance - value) <= 0):
-            print('ATM out of funds') # Inadaquete cash in ATM
+            print('ATM out of funds') # Insufficient cash in ATM
+            time.sleep(3)
+            break
         time.sleep(3)
 
         # Calculate new balances
-        value = (-1 * value)         # Flip the sign to allow withdrawal reduce account balance
+        value = (-1 * value) # Flip the sign to allow withdrawal reduce account balance
         new_cash_balance = cash_balance + value
         new_acc_balance = acc_balance + value
 
@@ -296,8 +304,9 @@ def withdraw(account):
         atm_log('Withdrawal', value)
         time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
         put_account_detail(account, new_acc_balance, time_stamp)
-        put_account_detail(CHEQUE_AC, new_cash_balance, time_stamp)
+        put_account_detail(CASH_AC, new_cash_balance, time_stamp)
         print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
+        time.sleep(3)
         transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
         break
 
@@ -311,9 +320,9 @@ def lodge(account):
     screen_header("Lodgement")
     
     # Find what funds are available to transact
-    verify, cheque_balance = get_account_detail(CASH_AC)
+    cheque_balance = get_account_detail(CASH_AC)
     cheque_balance = int(cheque_balance) # Amount in ATM
-    verify, acc_balance = get_account_detail(account)
+    acc_balance = get_account_detail(account)
     acc_balance = int(acc_balance) # Amount in account
 
     # Notify trx limit
@@ -367,7 +376,7 @@ def menu(card, account):
             # Account Balance
             atm_log('menu_balance', account)
             screen_header("Account balance")
-            verify, balance = get_account_detail(account)
+            balance = get_account_detail(account)
             print(f'Current balance: {CURRENCY}{balance}'.center(DISPLAY_WIDTH))
             time.sleep(3)
 
@@ -404,6 +413,8 @@ def main():
     while True:
         atm_log('start_attract', 0)
         screen_header("ATM")
+
+        # Get and validate card
         card = card_input()
         atm_log('card_in', card)
         row = get_card_detail(card)
@@ -412,8 +423,8 @@ def main():
             pin_count = row[2]
             account = row[3]
 
-        # Notify user of invalid card and quit loop
-        if not account:
+        # Notify user of invalid card and quit if invalid
+        if not row:
             print("Invalid card - please contact Bank")
             atm_log('card_return', card)
             return_card()
@@ -454,4 +465,5 @@ def main():
                 break
 
 atm_log('code_start', 0) # Log program startup
-main()
+#main()
+menu('2234','1234')

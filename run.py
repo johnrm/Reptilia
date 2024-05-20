@@ -103,8 +103,9 @@ def validate_number(numbers, length):
     length - length/number of digits
     """
     try:
-        numbers.isnumeric()
+        int(numbers)
         if len(numbers) != length:
+            input('b')
             raise Exception
         return True
     except ValueError:
@@ -183,15 +184,20 @@ def change_pin(card):
     atm_log("change_pin", card)
     screen_header("Change PIN")
     new_pin = getpass.getpass('   Enter new PIN (4 digits): ')
-    validate_number(new_pin, 4)
-    valid_pin = getpass.getpass('Re-Enter new PIN (4 digits): ')
-    validate_number(valid_pin, 4)
-    print('\nDo NOT forget new PIN!')
-    if (new_pin == valid_pin):
-        put_card_detail(card, new_pin, 0)
-        atm_log("pin_update", card)
-    time.sleep(3)
-    return_card()
+    if validate_number(new_pin, 4):
+        valid_pin = getpass.getpass('Re-Enter new PIN (4 digits): ')
+        if validate_number(valid_pin, 4) and (new_pin == valid_pin):
+            put_card_detail(card, new_pin, 0)
+            atm_log("pin_update", card)
+            print('\n  PIN updated!')
+            print('  Do NOT forget new PIN!')
+            time.sleep(3)
+        else:
+            print('PIN mismatch!')
+            time.sleep(3)
+    else:
+        print('PIN error!')
+        time.sleep(3)
 
 
 def return_card():
@@ -398,7 +404,6 @@ def main():
     while True:
         atm_log('start_attract', 0)
         screen_header("ATM")
-
         card = card_input()
         atm_log('card_in', card)
         verify, pin_no, pin_count, account = get_card_detail(card)      

@@ -101,11 +101,11 @@ def validate_number(numbers, length):
     Validate 'numbers' based on fed parameters
     numbers - the number to be validated
     length - length/number of digits
+    Returns True or False
     """
     try:
         int(numbers)
         if len(numbers) != length:
-            input('b')
             raise Exception
         return True
     except ValueError:
@@ -119,6 +119,7 @@ def validate_number(numbers, length):
 def card_input():
     """
     Input Card and PIN from user
+    Return validated card no. or False
     """
     card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
@@ -129,21 +130,18 @@ def card_input():
 
 def get_card_detail(card):
     """
-    Get details for the inserted Card
-    Tell calling function if card is valid/invalid
+    Get details and validate inserted Card
     card - card number to be checked
+    Returns row or False
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
     try:
         rownum = cardlist.index(card) + 1
     except ValueError:
-        return "invalid", 0, 0, 0
+        return False
     row = cardsheet.row_values(rownum)
-    pin_no = row[1]
-    pin_count = row[2]
-    account = row[3]
-    return "valid", pin_no, pin_count, account
+    return row
 
 
 def input_pin(pin_no):
@@ -193,9 +191,11 @@ def change_pin(card):
             print('  Do NOT forget new PIN!')
             time.sleep(3)
         else:
+            atm_log("pin_mismatch", card)
             print('PIN mismatch!')
             time.sleep(3)
     else:
+        atm_log("pin_error", card)
         print('PIN error!')
         time.sleep(3)
 
@@ -406,10 +406,14 @@ def main():
         screen_header("ATM")
         card = card_input()
         atm_log('card_in', card)
-        verify, pin_no, pin_count, account = get_card_detail(card)      
+        row = get_card_detail(card)
+        if row:
+            pin_no = row[1]
+            pin_count = row[2]
+            account = row[3]
 
         # Notify user of invalid card and quit loop
-        if verify == "invalid":
+        if not account:
             print("Invalid card - please contact Bank")
             atm_log('card_return', card)
             return_card()

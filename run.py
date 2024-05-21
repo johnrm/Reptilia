@@ -324,7 +324,7 @@ def lodge(account):
 
     # Notify trx limit
     print(f'Account Balance: {CURRENCY}{"%.2f" % acc_balance}')
-    print(f"Lodgement limit: {CURRENCY}{"%.2f" % LODGEMENT_LIMIT}")
+    print(f'Lodgement limit: {CURRENCY}{"%.2f" % LODGEMENT_LIMIT}')
 
     # Input and validate transaction amount
     try:

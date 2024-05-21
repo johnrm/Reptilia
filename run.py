@@ -29,8 +29,10 @@ DISPLAY_WIDTH = 30
 CASH_AC = "9999"
 # Bank Account (Account for the ATM machine)
 CHEQUE_AC = "9998"
-# Transaction limit
-TRANSACTION_LIMIT = 300
+# Withdrawal limit
+WITHDRAWAL_LIMIT = 300
+# Lodgement limit
+LODGEMENT_LIMIT = 1000
 
 
 def atm_log(action, data):
@@ -68,7 +70,7 @@ def statement(account):
     """
     atm_log("Statement", account)
     screen_header("Statement")
-    transactions = SHEET.worksheet("transactions") # Sheet
+    transactions = SHEET.worksheet("transactions")
     rows = transactions.get_all_values()
     print (" Date".ljust(15," "), CURRENCY.rjust(14," "))
     balance = 0
@@ -148,7 +150,8 @@ def get_card_detail(card):
 def input_pin(pin_no):
     """
     Get pin from user
-    pin_no - 
+    pin_no - PIN to be validate
+    Returns True or False
     """
     user_pin = getpass.getpass('Enter PIN (4 digits): ')
     if validate_number(user_pin, 4):
@@ -160,7 +163,7 @@ def input_pin(pin_no):
         return False
    
 
-def put_card_detail(card,pin_no,pin_count):
+def put_card_detail(card, pin_no, pin_count):
     """
     Update details for the inserted Card
     (pin_no and pin_count only)
@@ -252,10 +255,8 @@ def withdraw(account):
     atm_log("withdraw", account)
     
     # Find what funds are available to transact
-    cash_balance = get_account_detail(CASH_AC)
-#    cash_balance = cash_balance) # Amount in ATM
-    acc_balance = get_account_detail(account)
-#    acc_balance = int(acc_balance) # Amount in account
+    cash_balance = get_account_detail(CASH_AC) # Amount in ATM
+    acc_balance = get_account_detail(account) # Amount in account
 
     while True:
         # Notify if inadequate balance
@@ -267,12 +268,12 @@ def withdraw(account):
             break
 
         # Notify trx limit
-        print(f"Transaction limit: {CURRENCY}{"%.2f" % TRANSACTION_LIMIT}")
+        print(f"Transaction limit: {CURRENCY}{"%.2f" % WITHDRAWAL_LIMIT}")
 
         # Input and validate transaction amount
         try:
             print(f'Whole amount, multiples of {CURRENCY}10 only')
-            value = int(input("Withdrawal amount: ")) # Requested amount
+            value = float(input("Withdrawal amount: ")) # Requested amount
             if (divmod(value,10)[1] != 0) or not int(value):
                 print('Multiples of 10 only')
                 time.sleep(3)
@@ -282,8 +283,8 @@ def withdraw(account):
             time.sleep(3)
             break
 
-        if (value > TRANSACTION_LIMIT):
-            print('Exceeds transcation limit') # Transaction Limit exceeded
+        if (value > WITHDRAWAL_LIMIT):
+            print('Exceeds transcation limit') # Withdrawal Limit exceeded
             time.sleep(3)
             break
         elif  ((acc_balance - value) <= 0):
@@ -321,26 +322,26 @@ def lodge(account):
     screen_header("Lodgement")
     
     # Find what funds are available to transact
-    cheque_balance = get_account_detail(CHEQUE_AC)
-#    cheque_balance = int(cheque_balance) # Amount in ATM Cheque account
-    acc_balance = get_account_detail(account)
-#    acc_balance = int(acc_balance) # Amount in user account
+    cheque_balance = get_account_detail(CHEQUE_AC) # Amount in ATM Cheque account
+    acc_balance = get_account_detail(account) # Amount in user account
 
     # Notify trx limit
     print(f'Account Balance: {CURRENCY}{"%.2f" % acc_balance}')
-    print(f"Lodgement limit: {CURRENCY}{"%.2f" % TRANSACTION_LIMIT}")
+    print(f"Lodgement limit: {CURRENCY}{"%.2f" % LODGEMENT_LIMIT}")
 
     # Input and validate transaction amount
     try:
         value = float(input("Lodgement amount: ")) # Lodgement amount
     except ValueError:
         print("Non-numeric entry!")
-        input ('help!')
+        time.sleep(3)
         return False
 
-    if (value > TRANSACTION_LIMIT):
-        print('Exceeds transcation limit') # Transaction Limit exceeded
+    if (value > LODGEMENT_LIMIT):
+        print('Exceeds lodgement limit') # Lodgement Limit exceeded
         time.sleep(3)
+        return False
+    elif (value = 0):
         return False
 
     # Calculate new balances
@@ -469,6 +470,4 @@ def main():
                 break
 
 atm_log('code_start', 0) # Log program startup
-# main()
-menu('2234','1234')
-print("%.2f" % balance)
+main()

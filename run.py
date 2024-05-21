@@ -1,8 +1,11 @@
+"""
+Modules to be imported
+"""
 import os
 import time
 import getpass
-import gspread
 import datetime
+import gspread
 from google.oauth2.service_account import Credentials
 
 SCOPE = [
@@ -41,8 +44,8 @@ def atm_log(action, data):
     action - The current machine action
     data - differs depending on machine action
     """
-    time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-    data = [time,action,data]
+    timestamp = str(datetime.datetime.now())
+    data = [timestamp, action, data]
     log = SHEET.worksheet('atm_log')
     log.append_row(data)
 
@@ -56,8 +59,8 @@ def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
     medium - cash or cheque
     new_acc_balance - new account balance based on this transaction
     """
-    time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
-    data = [time, account, transaction_type, amount, medium, new_acc_balance]
+    timestamp = str(datetime.datetime.now())
+    data = [timestamp, account, transaction_type, amount, medium, new_acc_balance]
     log = SHEET.worksheet('transactions')
     log.append_row(data)
 
@@ -75,7 +78,7 @@ def statement(account):
     print (" Date".ljust(15," "), CURRENCY.rjust(14," "))
     balance = 0
     for row in rows:
-        if (row[1] == account):
+        if row[1] == account:
             date = row[0]
             date = date[8:10] + "-" + date[5:7] + "-" + date[2:4]
             amount = float(row[3])
@@ -96,7 +99,7 @@ def screen_header(function):
     print ("-" * DISPLAY_WIDTH)
     print(function.center(DISPLAY_WIDTH))
     print ("-" * DISPLAY_WIDTH)
-    print()    
+    print()
 
 
 def validate_number(numbers, length):
@@ -127,8 +130,6 @@ def card_input():
     card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
         return card
-    else:
-        return False
 
 
 def get_card_detail(card):
@@ -155,13 +156,11 @@ def input_pin(pin_no):
     """
     user_pin = getpass.getpass('Enter PIN (4 digits): ')
     if validate_number(user_pin, 4):
-        if (user_pin != pin_no):
-            return False
-        else:
+        if user_pin == pin_no:
             return True
     else:
         return False
-   
+
 
 def put_card_detail(card, pin_no, pin_count):
     """
@@ -174,7 +173,6 @@ def put_card_detail(card, pin_no, pin_count):
         rownum = cardlist.index(card) + 1
     except ValueError:
         return
-    row = cardsheet.row_values(rownum)
     cardsheet.update([[pin_no, pin_count]], f'B{rownum}:C{rownum}')
 
 
@@ -230,12 +228,12 @@ def get_account_detail(account):
     return float(balance)
 
 
-def put_account_detail(account, balance, time):
+def put_account_detail(account, balance, timestamp):
     """
     Update account balance to gsheet
     account - account to be updated
     balance - new balance
-    time - timestamp for the update
+    timestamp - timestamp for the update
     """
     accountsheet = SHEET.worksheet("accounts")
     accountlist = accountsheet.col_values(1)
@@ -243,9 +241,8 @@ def put_account_detail(account, balance, time):
         rownum = accountlist.index(account) + 1
     except ValueError:
         return
-    row = accountsheet.row_values(rownum)
-    accountsheet.update([[balance, time]], f'E{rownum}:F{rownum}')
-    
+    accountsheet.update([[balance, timestamp]], f'E{rownum}:F{rownum}')
+
 
 def withdraw(account):
     """
@@ -253,7 +250,7 @@ def withdraw(account):
     account - account to remove cash from
     """
     atm_log("withdraw", account)
-    
+
     # Find what funds are available to transact
     cash_balance = get_account_detail(CASH_AC) # Amount in ATM
     acc_balance = get_account_detail(account) # Amount in account
@@ -262,13 +259,13 @@ def withdraw(account):
         # Notify if inadequate balance
         screen_header("Withdrawal")
         print(f'Available funds: {CURRENCY}{"%.2f" % acc_balance}')
-        if  (acc_balance <= 0):
+        if  acc_balance <= 0:
             print('Inadequate funds')
             time.sleep(3)
             break
 
         # Notify trx limit
-        print(f"Transaction limit: {CURRENCY}{"%.2f" % WITHDRAWAL_LIMIT}")
+        print(f'Transaction limit: {CURRENCY}{"%.2f" % WITHDRAWAL_LIMIT}')
 
         # Input and validate transaction amount
         try:
@@ -283,30 +280,30 @@ def withdraw(account):
             time.sleep(3)
             break
 
-        if (value > WITHDRAWAL_LIMIT):
+        if value > WITHDRAWAL_LIMIT:
             print('Exceeds transcation limit') # Withdrawal Limit exceeded
             time.sleep(3)
             break
-        elif  ((acc_balance - value) <= 0):
+        if (acc_balance - value) <= 0:
             print('Exceeds available funds') # Insufficient funds in account
             time.sleep(3)
             break
-        elif ((cash_balance - value) <= 0):
+        if (cash_balance - value) <= 0:
             print('ATM out of funds') # Insufficient cash in ATM
             time.sleep(3)
             break
         time.sleep(3)
 
         # Calculate new balances
-        value = (-1 * value) # Flip the sign to allow withdrawal reduce account balance
+        value = -1 * value # Flip the sign to allow withdrawal reduce account balance
         new_cash_balance = cash_balance + value
         new_acc_balance = acc_balance + value
 
         # Log the transaction to ATM log and transaction log
         atm_log('Withdrawal', value)
-        time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
-        put_account_detail(account, new_acc_balance, time_stamp)
-        put_account_detail(CASH_AC, new_cash_balance, time_stamp)
+        timestamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        put_account_detail(account, new_acc_balance, timestamp)
+        put_account_detail(CASH_AC, new_cash_balance, timestamp)
         print (f'New balance    : {CURRENCY}{"%.2f" % new_acc_balance}')
         transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
         time.sleep(3)
@@ -320,7 +317,7 @@ def lodge(account):
     """
     atm_log("lodge", account)
     screen_header("Lodgement")
-    
+
     # Find what funds are available to transact
     cheque_balance = get_account_detail(CHEQUE_AC) # Amount in ATM Cheque account
     acc_balance = get_account_detail(account) # Amount in user account
@@ -337,22 +334,22 @@ def lodge(account):
         time.sleep(3)
         return False
 
-    if (value > LODGEMENT_LIMIT):
+    if value > LODGEMENT_LIMIT:
         print('Exceeds lodgement limit') # Lodgement Limit exceeded
         time.sleep(3)
         return False
-    elif (value = 0):
+    if value == 0:
         return False
 
     # Calculate new balances
     new_cheque_balance = cheque_balance + value
     new_acc_balance = acc_balance + value
-    
+
     # Log the transaction
     atm_log('Lodgement', value)
-    time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
-    put_account_detail(account, new_acc_balance, time_stamp)
-    put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
+    timestamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+    put_account_detail(account, new_acc_balance, timestamp)
+    put_account_detail(CHEQUE_AC, new_cheque_balance, timestamp)
     print(f'New balance: {CURRENCY}{"%.2f" % new_acc_balance}')
     transaction_log(account, "lodgement", value, "cheque", new_acc_balance)
     time.sleep(3)
@@ -436,12 +433,12 @@ def main():
             continue
 
         # Notify user of card and PIN issues
-        if (int(pin_count) == MAX_PIN_FAIL):
+        if int(pin_count) == MAX_PIN_FAIL:
             print("Card error - please contact Bank")
             atm_log('card_error_max_pin', card)
             time.sleep(3)
             continue
-        elif (int(pin_count) > 0):
+        if int(pin_count) > 0:
             atm_log('card_warning_pin_count', card)
             print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempts left")
 
@@ -461,13 +458,13 @@ def main():
                     break
                 atm_log('card_pin_fail', card)
                 break
-            else:
-                # If PIN is correct, reset fail count on card
-                atm_log('card_pin_reset', card)
-                put_card_detail(card, pin_no, 0)
-                menu(card, account)
-                return_card()
-                break
+
+            # If PIN is correct, reset fail count on card
+            atm_log('card_pin_reset', card)
+            put_card_detail(card, pin_no, 0)
+            menu(card, account)
+            return_card()
+            break
 
 atm_log('code_start', 0) # Log program startup
 main()

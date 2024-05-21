@@ -20,7 +20,7 @@ SHEET = GSPREAD_CLIENT.open('ATM')
 # Bank name
 BANK_NAME = "Reptilia Bank"
 # Currency
-CURRENCY = "EUR"
+CURRENCY = "EUR "
 # Max failed PIN on card
 MAX_PIN_FAIL = 3
 # Set display width
@@ -70,16 +70,17 @@ def statement(account):
     screen_header("Statement")
     transactions = SHEET.worksheet("transactions") # Sheet
     rows = transactions.get_all_values()
-    print ("Date".ljust(15," "), CURRENCY.rjust(14," "))
+    print (" Date".ljust(15," "), CURRENCY.rjust(14," "))
     balance = 0
     for row in rows:
         if (row[1] == account):
             date = row[0]
             date = date[8:10] + "-" + date[5:7] + "-" + date[2:4]
-            amount = row[3]
-            balance = row[5]            
-            print (date.ljust(15," "), amount.rjust(14," "))
-    print('Balance:' , str(balance).rjust(21," "))
+            amount = float(row[3])
+            balance = float(row[5])
+            print (date.ljust(15," "), str("%.2f" % amount).rjust(14," "))
+    print('--------' , '--------'.rjust(21," "))
+    print('Balance:' , str("%.2f" % balance).rjust(21," "))
     time.sleep(5)
 
 
@@ -223,7 +224,7 @@ def get_account_detail(account):
         return False
     row = accountsheet.row_values(rownum)
     balance = row[4]
-    return balance 
+    return float(balance)
 
 
 def put_account_detail(account, balance, time):
@@ -252,26 +253,26 @@ def withdraw(account):
     
     # Find what funds are available to transact
     cash_balance = get_account_detail(CASH_AC)
-    cash_balance = int(cash_balance) # Amount in ATM
+#    cash_balance = cash_balance) # Amount in ATM
     acc_balance = get_account_detail(account)
-    acc_balance = int(acc_balance) # Amount in account
+#    acc_balance = int(acc_balance) # Amount in account
 
     while True:
         # Notify if inadequate balance
         screen_header("Withdrawal")
-        print(f'Available funds : {CURRENCY}{acc_balance}')
+        print(f'Available funds: {CURRENCY}{"%.2f" % acc_balance}')
         if  (acc_balance <= 0):
             print('Inadequate funds')
             time.sleep(3)
             break
 
         # Notify trx limit
-        print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+        print(f"Transaction limit: {CURRENCY}{"%.2f" % TRANSACTION_LIMIT}")
 
         # Input and validate transaction amount
         try:
             print(f'Whole amount, multiples of {CURRENCY}10 only')
-            value = int(input("Transaction amount? ")) # Requested amount
+            value = int(input("Withdrawal amount: ")) # Requested amount
             if (divmod(value,10)[1] != 0) or not int(value):
                 print('Multiples of 10 only')
                 time.sleep(3)
@@ -305,9 +306,9 @@ def withdraw(account):
         time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
         put_account_detail(account, new_acc_balance, time_stamp)
         put_account_detail(CASH_AC, new_cash_balance, time_stamp)
-        print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
-        time.sleep(3)
+        print (f'New balance    : {CURRENCY}{"%.2f" % new_acc_balance}')
         transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
+        time.sleep(3)
         break
 
 
@@ -320,19 +321,21 @@ def lodge(account):
     screen_header("Lodgement")
     
     # Find what funds are available to transact
-    cheque_balance = get_account_detail(CASH_AC)
-    cheque_balance = int(cheque_balance) # Amount in ATM
+    cheque_balance = get_account_detail(CHEQUE_AC)
+#    cheque_balance = int(cheque_balance) # Amount in ATM Cheque account
     acc_balance = get_account_detail(account)
-    acc_balance = int(acc_balance) # Amount in account
+#    acc_balance = int(acc_balance) # Amount in user account
 
     # Notify trx limit
-    print(f"Transaction limit {CURRENCY}{TRANSACTION_LIMIT}")
+    print(f'Account Balance: {CURRENCY}{"%.2f" % acc_balance}')
+    print(f"Lodgement limit: {CURRENCY}{"%.2f" % TRANSACTION_LIMIT}")
 
     # Input and validate transaction amount
     try:
-        value = int(input("Transaction amount? ")) # Requested amount
+        value = float(input("Lodgement amount: ")) # Lodgement amount
     except ValueError:
         print("Non-numeric entry!")
+        input ('help!')
         return False
 
     if (value > TRANSACTION_LIMIT):
@@ -349,8 +352,9 @@ def lodge(account):
     time_stamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
     put_account_detail(account, new_acc_balance, time_stamp)
     put_account_detail(CHEQUE_AC, new_cheque_balance, time_stamp)
-    print(f'New balance    : {CURRENCY}' + str(new_acc_balance))
+    print(f'New balance: {CURRENCY}{"%.2f" % new_acc_balance}')
     transaction_log(account, "lodgement", value, "cheque", new_acc_balance)
+    time.sleep(3)
 
 
 def menu(card, account):
@@ -377,7 +381,7 @@ def menu(card, account):
             atm_log('menu_balance', account)
             screen_header("Account balance")
             balance = get_account_detail(account)
-            print(f'Current balance: {CURRENCY}{balance}'.center(DISPLAY_WIDTH))
+            print(f'Current balance: {CURRENCY}{"%.2f" % balance}'.center(DISPLAY_WIDTH))
             time.sleep(3)
 
         elif choice == "2":
@@ -465,5 +469,6 @@ def main():
                 break
 
 atm_log('code_start', 0) # Log program startup
-#main()
+# main()
 menu('2234','1234')
+print("%.2f" % balance)

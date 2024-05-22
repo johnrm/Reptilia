@@ -107,11 +107,11 @@ def statement(account):
             date = date[8:10] + "-" + date[5:7] + "-" + date[2:4]
             amount = float(row[3])
             balance = float(row[5])
-            print (date.ljust(15," "), f'{amount:.2f}'.rjust(14," "))
-            row_count += 1 # Increment row count
+            print(date.ljust(15," "), f'{amount:.2f}'.rjust(14," "))
+            row_count += 1  # Increment row count
             if divmod(row_count,10)[1] == 0:
                 input('Press <Enter>')
-                page_count += 1 # Increment page count
+                page_count += 1  # Increment page count
                 screen_header("Statement - Page " + str(page_count))
                 print(" Date".ljust(15," "), CURRENCY.rjust(14," "))
     print('--------' , '--------'.rjust(21," "))
@@ -131,9 +131,9 @@ def screen_header(function):
     """
     os.system('cls' if os.name == 'nt' else 'clear')
     print(BANK_NAME.center(DISPLAY_WIDTH))
-    print ("-" * DISPLAY_WIDTH)
+    print("-" * DISPLAY_WIDTH)
     print(function.center(DISPLAY_WIDTH))
-    print ("-" * DISPLAY_WIDTH)
+    print("-" * DISPLAY_WIDTH)
     print()
 
 
@@ -335,8 +335,8 @@ def withdraw(account):
     atm_log("withdraw", account)
 
     # Find what funds are available to transact
-    cash_balance = get_account_detail(CASH_AC) # Amount in ATM
-    acc_balance = get_account_detail(account) # Amount in account
+    cash_balance = get_account_detail(CASH_AC)  # Amount in ATM
+    acc_balance = get_account_detail(account)  # Amount in account
 
     while True:
         # Notify if inadequate balance
@@ -353,7 +353,7 @@ def withdraw(account):
         # Input and validate transaction amount
         try:
             print(f'Whole amount, multiples of {CURRENCY}10 only')
-            value = float(input("Withdrawal amount: ")) # Requested amount
+            value = float(input("Withdrawal amount: "))  # Requested amount
             if (divmod(value,10)[1] != 0) or not int(value):
                 print('Multiples of 10 only')
                 time.sleep(3)
@@ -364,21 +364,21 @@ def withdraw(account):
             break
 
         if value > WITHDRAWAL_LIMIT:
-            print('Exceeds transcation limit') # Withdrawal Limit exceeded
+            print('Exceeds transcation limit')  # Withdrawal Limit exceeded
             time.sleep(3)
             break
         if (acc_balance - value) <= 0:
-            print('Exceeds available funds') # Insufficient funds in account
+            print('Exceeds available funds')  # Insufficient funds in account
             time.sleep(3)
             break
         if (cash_balance - value) <= 0:
-            print('ATM out of funds') # Insufficient cash in ATM
+            print('ATM out of funds')  # Insufficient cash in ATM
             time.sleep(3)
             break
         time.sleep(3)
 
         # Calculate new balances
-        value = -1 * value # Flip the sign to allow withdrawal reduce account balance
+        value = -1 * value  # Flip the sign to allow withdrawal reduce account balance
         new_cash_balance = cash_balance + value
         new_acc_balance = acc_balance + value
 
@@ -387,7 +387,7 @@ def withdraw(account):
         timestamp = str(datetime.datetime.now())
         put_account_detail(account, new_acc_balance, timestamp)
         put_account_detail(CASH_AC, new_cash_balance, timestamp)
-        print (f'New balance    : {CURRENCY}{new_acc_balance:.2f}')
+        print(f'New balance    : {CURRENCY}{new_acc_balance:.2f}')
         transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
         time.sleep(3)
         break
@@ -407,8 +407,8 @@ def lodge(account):
     screen_header("Lodgement")
 
     # Find what funds are available to transact
-    cheque_balance = get_account_detail(CHEQUE_AC) # Amount in ATM Cheque account
-    acc_balance = get_account_detail(account) # Amount in user account
+    cheque_balance = get_account_detail(CHEQUE_AC)  # Amount in ATM Cheque account
+    acc_balance = get_account_detail(account)  # Amount in user account
 
     while True:
         # Notify trx limit
@@ -417,14 +417,14 @@ def lodge(account):
 
         # Input and validate transaction amount
         try:
-            value = float(input("Lodgement amount: ")) # Lodgement amount
+            value = round(float(input("Lodgement amount: ")),2)  # Lodgement amount
         except ValueError:
             print("Non-numeric entry!")
             time.sleep(3)
             break
 
         if value > LODGEMENT_LIMIT:
-            print('Exceeds lodgement limit') # Lodgement Limit exceeded
+            print('Exceeds lodgement limit')  # Lodgement Limit exceeded
             time.sleep(3)
             break
 
@@ -568,5 +568,5 @@ def main():
             return_card()
             break
 
-atm_log('code_start', 0) # Log program startup
+atm_log('code_start', 0)  # Log program startup
 main()

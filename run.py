@@ -1,5 +1,12 @@
 """
 Modules to be imported
+os - used for display management
+time - used for pauses within the application
+getpass - hides PIN input
+datetime - used for action timestamps
+gspread - library to access Google Sheets where all data sits
+google.oauth - authentication for Google Sheets
+
 """
 import os
 import time
@@ -338,6 +345,7 @@ def lodge(account):
         print('Exceeds lodgement limit') # Lodgement Limit exceeded
         time.sleep(3)
         return False
+
     if value == 0:
         return False
 
@@ -402,7 +410,7 @@ def menu(card, account):
             atm_log('menu_change_pin', account)
             change_pin(card)
 
-        elif (choice == "0" or choice == ""):
+        elif choice in ("0",""):
             # Exit the menu
             atm_log('menu_exit', account)
             break

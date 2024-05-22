@@ -28,6 +28,7 @@ It provides a set of features typical on a highstreet bank ATM...
 3. Lodge Cheque  
 4. Print Statement  
 5. Change PIN  
+
   
 ([Back to top](#index))  
 
@@ -200,7 +201,9 @@ Typeahead is possible into keyboard buffer, but not advised. It is best to wait 
 
 
 ## Technologies used and Deployment  
+The code is written in Python.
 Site code sits in this Github repository.  
+Data sits in a Google sheet and is accessible via Google auth.
 The development IDE used is Gitpod.  
 Code commits are pushed to Github as the code develops with brief relevant comments.  
 Deployment is on Heroku using standard Heroku deployment processes.  

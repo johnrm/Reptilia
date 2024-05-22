@@ -49,8 +49,13 @@ LODGEMENT_LIMIT = 1000
 def atm_log(action, data):
     """
     Log and Timestamp actions on the ATM
-    action - The current machine action
-    data - differs depending on machine action
+
+    Args:
+        action (string): The current machine action
+        data (string): detail from the machine action
+
+    Returns:
+        none
     """
     timestamp = str(datetime.datetime.now())
     data = [timestamp, action, data]
@@ -61,11 +66,16 @@ def atm_log(action, data):
 def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
     """
     Log the transaction for accounting and statement purposes
-    account - the account for which the transaction is being logged
-    transaction_type - transaction type
-    amount - value of  transaction
-    medium - cash or cheque
-    new_acc_balance - new account balance based on this transaction
+
+    Args:
+        account (string): - the account for which the transaction is being logged
+        transaction_type (string): - transaction type
+        amount (float): - value of  transaction
+        medium (string): - cash or cheque
+        new_acc_balance (float): - new account balance based on this transaction
+
+    Returns:
+        none
     """
     timestamp = str(datetime.datetime.now())
     data = [timestamp, account, transaction_type, amount, medium, new_acc_balance]
@@ -75,9 +85,13 @@ def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
 
 def statement(account):
     """
-    Statement display
-    Displays transactions and account balance for the current card/account
-    account - the account for which a statement is required
+    Displays statement of transactions and account balance for the current card/account
+
+    Args:
+        account (string): The account for which a statement is required
+
+    Returns:
+        none
     """
     atm_log("Statement", account)
     screen_header("Statement")
@@ -100,7 +114,12 @@ def statement(account):
 def screen_header(function):
     """
     Displays the screen header for all screens
-    function - the text to be highlighted
+
+    Args:
+        function (string): The text to be highlighted
+
+    Returns:
+        none
     """
     os.system('cls' if os.name == 'nt' else 'clear')
     print(BANK_NAME.center(DISPLAY_WIDTH))
@@ -112,28 +131,35 @@ def screen_header(function):
 
 def validate_number(numbers, length):
     """
-    Validate 'numbers' based on fed parameters
-    numbers - the number to be validated
-    length - length/number of digits
-    Returns True or False
+    Validates 'numbers'
+
+    Args:
+        numbers (string): the number to be validated
+        length (int): number of digits required
+
+    Returns:
+        True or False
     """
-    try:
-        int(numbers)
+    if numbers.isdigit():
         if len(numbers) != length:
-            raise Exception
-        return True
-    except ValueError:
+            print(f"{len(numbers)} digits entered, {length} expected!")
+            time.sleep(3)
+            return False
+    else:
         print("Non-numeric entry!")
-        return False
-    except Exception:
-        print(f"{len(numbers)} digits entered, {length} expected!")
+        time.sleep(3)
         return False
 
 
 def card_input():
     """
     Input Card and PIN from user
-    Return validated card no. or False
+
+    Args:
+        none
+
+    Returns:
+        Validated card no. or False
     """
     card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
@@ -142,9 +168,13 @@ def card_input():
 
 def get_card_detail(card):
     """
-    Get details and validate inserted Card
-    card - card number to be checked
-    Returns row or False
+    Get Card detail based on inserted or keyed card
+
+    Args:
+        card (string): Card number to be checked
+
+    Returns:
+        Returns row or False
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
@@ -159,8 +189,12 @@ def get_card_detail(card):
 def input_pin(pin_no):
     """
     Get pin from user
-    pin_no - PIN to be validate
-    Returns True or False
+
+    Args:
+        pin_no (string): PIN to be input and validated
+
+    Returns:
+        True or False
     """
     user_pin = getpass.getpass('Enter PIN (4 digits): ')
     if validate_number(user_pin, 4):
@@ -173,7 +207,14 @@ def input_pin(pin_no):
 def put_card_detail(card, pin_no, pin_count):
     """
     Update details for the inserted Card
-    (pin_no and pin_count only)
+
+    Args:
+        card (string): The current card
+        pin_no (string): PIN to be input and validated
+        pin_count (int): Current number of failed pin attempts (limited by MAX_PIN_FAIL)
+
+    Returns:
+        none
     """
     cardsheet = SHEET.worksheet("cards")
     cardlist = cardsheet.col_values(1)
@@ -187,7 +228,12 @@ def put_card_detail(card, pin_no, pin_count):
 def change_pin(card):
     """
     Function to change PIN on individual card.
-    card - Card number is passed in.
+
+    Args:
+        card (string): Card number for PIN change
+
+    Returns:
+        none
     """
     atm_log("change_pin", card)
     screen_header("Change PIN")
@@ -212,7 +258,13 @@ def change_pin(card):
 
 def return_card():
     """
-    Return card to user at end of session
+    Return card and notify user at end of session
+
+        Args:
+            none
+
+        Returns:
+            none
     """
     screen_header("ATM")
     print("    Please take your card")
@@ -223,7 +275,12 @@ def return_card():
 def get_account_detail(account):
     """
     Get and return account detail
-    account - the account to be retrieved
+
+    Args:
+        account (string): The account to be retrieved
+
+    Returns:
+        balance (float): Current account balance
     """
     accountsheet = SHEET.worksheet("accounts")
     accountlist = accountsheet.col_values(1)
@@ -239,9 +296,14 @@ def get_account_detail(account):
 def put_account_detail(account, balance, timestamp):
     """
     Update account balance to gsheet
-    account - account to be updated
-    balance - new balance
-    timestamp - timestamp for the update
+
+    Args:
+        account (string): The account to be updated
+        balance (float): New balance
+        timestamp (string): timestamp for the update
+
+    Returns:
+        none
     """
     accountsheet = SHEET.worksheet("accounts")
     accountlist = accountsheet.col_values(1)
@@ -255,7 +317,12 @@ def put_account_detail(account, balance, timestamp):
 def withdraw(account):
     """
     Withdrawal transaction takes place here
-    account - account to remove cash from
+
+    Args:
+        account (string): The account to remove cash from
+
+    Returns:
+        none
     """
     atm_log("withdraw", account)
 
@@ -321,7 +388,12 @@ def withdraw(account):
 def lodge(account):
     """
     Lodgements take place here
-    account - account having funds added
+
+    Args:
+        account (string): The account having funds added
+
+    Retirns:
+        none
     """
     atm_log("lodge", account)
     screen_header("Lodgement")
@@ -367,8 +439,13 @@ def lodge(account):
 def menu(card, account):
     """
     Menu of user options
-    card - current users card
-    account - current users account
+
+    Args: 
+        card (string): The current users card
+        account (string): The current users account
+
+    Returns:
+        none
     """
     while True:
         screen_header("ATM Options")
@@ -420,6 +497,12 @@ def menu(card, account):
 def main():
     """
     Main routine
+
+    Args:
+        none
+
+    Returns:
+        none
     """
     while True:
         atm_log('start_attract', 0)

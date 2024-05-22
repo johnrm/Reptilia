@@ -26,9 +26,17 @@ It provides a set of features typical on a high-street bank ATM...
 4. Print Statement  
 5. Change PIN  
 
+### Cash and Cheque accounts
+There are 2 'Bank' Accounts in the ATM.  
+9999 - Cash account - This is the 'Cash' in the ATM and decreases.  
+9998 - Cheque account - This is the total Cheques (Lodgements) in the machine and incremenets when the lodgement action is performed.  
+Both of these are show in the Accounts screen grab under 'Google Sheets' below.  
+
 ### Future Features...
 1. ATM activity logging is in the code already and could be enhanced and implemented in a future release for auditing or troubleshooting by the bank.  
 2. While this only a simulation, it would be possible to add card reader and printer to bring it closer to a full ATM.
+3. Cash Cassette topup - Add Cash to the machine when the Security truck inserts a fresh cash cassette.
+4. Lodge Cheques - Technically Cheques should not go direct to account unless honoured by a bank. This could be added as a stage so Cheque Lodgement does not immediately increment account balance.
 
   
 ([Back to top](#index))  

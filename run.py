@@ -151,12 +151,12 @@ def validate_number(numbers, length):
     if not numbers.isdigit():
         print("Non-numeric entry!")
         time.sleep(3)
-        return 1
+        return False
     if len(numbers) != length:
         print(f"{len(numbers)} digits entered, {length} expected!")
         time.sleep(3)
-        return 1 #False
-    return 1 #True
+        return False
+    return True
 
 
 def card_input():
@@ -275,7 +275,7 @@ def return_card():
             none
     """
     screen_header("ATM")
-    print("    Please take your card")
+    print("Please take your card and cash")
     print("      Have a nice day!")
     time.sleep(3)
 
@@ -460,8 +460,8 @@ def menu(card, account):
     while True:
         screen_header("ATM Options")
         print("1> Check Balance")
-        print("2> Withdraw cash")
-        print("3> Lodgement")
+        print("2> Withdraw Cash")
+        print("3> Lodge Cheque")
         print("4> Print Statement")
         print("5> Change PIN")
         print("-" * 18)

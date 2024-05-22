@@ -15,12 +15,13 @@ import datetime
 import gspread
 from google.oauth2.service_account import Credentials
 
+
+# Access to the Google Sheet 'ATM' is set up here.
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
     ]
-
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
@@ -82,7 +83,7 @@ def statement(account):
     screen_header("Statement")
     transactions = SHEET.worksheet("transactions")
     rows = transactions.get_all_values()
-    print (" Date".ljust(15," "), CURRENCY.rjust(14," "))
+    print(" Date".ljust(15," "), CURRENCY.rjust(14," "))
     balance = 0
     for row in rows:
         if row[1] == account:
@@ -90,9 +91,9 @@ def statement(account):
             date = date[8:10] + "-" + date[5:7] + "-" + date[2:4]
             amount = float(row[3])
             balance = float(row[5])
-            print (date.ljust(15," "), str("%.2f" % amount).rjust(14," "))
+            print (date.ljust(15," "), f'{amount:.2f}'.rjust(14," "))
     print('--------' , '--------'.rjust(21," "))
-    print('Balance:' , str("%.2f" % balance).rjust(21," "))
+    print('Balance:' , f'{balance:.2f}'.rjust(21," "))
     time.sleep(5)
 
 
@@ -265,14 +266,14 @@ def withdraw(account):
     while True:
         # Notify if inadequate balance
         screen_header("Withdrawal")
-        print(f'Available funds: {CURRENCY}{"%.2f" % acc_balance}')
+        print(f'Available funds: {CURRENCY}{acc_balance:.2f}')
         if  acc_balance <= 0:
             print('Inadequate funds')
             time.sleep(3)
             break
 
         # Notify trx limit
-        print(f'Transaction limit: {CURRENCY}{"%.2f" % WITHDRAWAL_LIMIT}')
+        print(f'Transaction limit: {CURRENCY}{WITHDRAWAL_LIMIT:.2f}')
 
         # Input and validate transaction amount
         try:
@@ -308,10 +309,10 @@ def withdraw(account):
 
         # Log the transaction to ATM log and transaction log
         atm_log('Withdrawal', value)
-        timestamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        timestamp = str(datetime.datetime.now())
         put_account_detail(account, new_acc_balance, timestamp)
         put_account_detail(CASH_AC, new_cash_balance, timestamp)
-        print (f'New balance    : {CURRENCY}{"%.2f" % new_acc_balance}')
+        print (f'New balance    : {CURRENCY}{new_acc_balance:.2f}')
         transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
         time.sleep(3)
         break
@@ -330,8 +331,8 @@ def lodge(account):
     acc_balance = get_account_detail(account) # Amount in user account
 
     # Notify trx limit
-    print(f'Account Balance: {CURRENCY}{"%.2f" % acc_balance}')
-    print(f'Lodgement limit: {CURRENCY}{"%.2f" % LODGEMENT_LIMIT}')
+    print(f'Account Balance: {CURRENCY}{acc_balance:.2f}')
+    print(f'Lodgement limit: {CURRENCY}{LODGEMENT_LIMIT:.2f}')
 
     # Input and validate transaction amount
     try:
@@ -355,10 +356,10 @@ def lodge(account):
 
     # Log the transaction
     atm_log('Lodgement', value)
-    timestamp = ('{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+    timestamp = str(datetime.datetime.now())
     put_account_detail(account, new_acc_balance, timestamp)
     put_account_detail(CHEQUE_AC, new_cheque_balance, timestamp)
-    print(f'New balance: {CURRENCY}{"%.2f" % new_acc_balance}')
+    print(f'New balance: {CURRENCY}{new_acc_balance:.2f}')
     transaction_log(account, "lodgement", value, "cheque", new_acc_balance)
     time.sleep(3)
 
@@ -387,7 +388,7 @@ def menu(card, account):
             atm_log('menu_balance', account)
             screen_header("Account balance")
             balance = get_account_detail(account)
-            print(f'Current balance: {CURRENCY}{"%.2f" % balance}'.center(DISPLAY_WIDTH))
+            print(f'Current balance: {CURRENCY}{balance:.2f}'.center(DISPLAY_WIDTH))
             time.sleep(3)
 
         elif choice == "2":

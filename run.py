@@ -94,11 +94,13 @@ def statement(account):
         none
     """
     atm_log("Statement", account)
-    screen_header("Statement")
+    screen_header("Statement - Page 1")
     transactions = SHEET.worksheet("transactions")
     rows = transactions.get_all_values()
     print(" Date".ljust(15," "), CURRENCY.rjust(14," "))
     balance = 0
+    row_count = 0
+    page_count = 1
     for row in rows:
         if row[1] == account:
             date = row[0]
@@ -106,9 +108,15 @@ def statement(account):
             amount = float(row[3])
             balance = float(row[5])
             print (date.ljust(15," "), f'{amount:.2f}'.rjust(14," "))
+            row_count += 1 # Increment row count
+            if divmod(row_count,10)[1] == 0:
+                input('Press <Enter>')
+                page_count += 1 # Increment page count
+                screen_header("Statement - Page " + str(page_count))
+                print(" Date".ljust(15," "), CURRENCY.rjust(14," "))
     print('--------' , '--------'.rjust(21," "))
     print('Balance:' , f'{balance:.2f}'.rjust(21," "))
-    time.sleep(5)
+    input('Press <Enter>')
 
 
 def screen_header(function):
@@ -140,15 +148,15 @@ def validate_number(numbers, length):
     Returns:
         True or False
     """
-    if numbers.isdigit():
-        if len(numbers) != length:
-            print(f"{len(numbers)} digits entered, {length} expected!")
-            time.sleep(3)
-            return False
-    else:
+    if not numbers.isdigit():
         print("Non-numeric entry!")
         time.sleep(3)
-        return False
+        return 1
+    if len(numbers) != length:
+        print(f"{len(numbers)} digits entered, {length} expected!")
+        time.sleep(3)
+        return 1 #False
+    return 1 #True
 
 
 def card_input():
@@ -164,6 +172,7 @@ def card_input():
     card = input("Insert card (or enter card ID): ")
     if validate_number(card, 4):
         return card
+    return False
 
 
 def get_card_detail(card):
@@ -200,8 +209,7 @@ def input_pin(pin_no):
     if validate_number(user_pin, 4):
         if user_pin == pin_no:
             return True
-    else:
-        return False
+    return False
 
 
 def put_card_detail(card, pin_no, pin_count):
@@ -392,7 +400,7 @@ def lodge(account):
     Args:
         account (string): The account having funds added
 
-    Retirns:
+    Returns:
         none
     """
     atm_log("lodge", account)
@@ -402,38 +410,40 @@ def lodge(account):
     cheque_balance = get_account_detail(CHEQUE_AC) # Amount in ATM Cheque account
     acc_balance = get_account_detail(account) # Amount in user account
 
-    # Notify trx limit
-    print(f'Account Balance: {CURRENCY}{acc_balance:.2f}')
-    print(f'Lodgement limit: {CURRENCY}{LODGEMENT_LIMIT:.2f}')
+    while True:
+        # Notify trx limit
+        print(f'Account Balance: {CURRENCY}{acc_balance:.2f}')
+        print(f'Lodgement limit: {CURRENCY}{LODGEMENT_LIMIT:.2f}')
 
-    # Input and validate transaction amount
-    try:
-        value = float(input("Lodgement amount: ")) # Lodgement amount
-    except ValueError:
-        print("Non-numeric entry!")
+        # Input and validate transaction amount
+        try:
+            value = float(input("Lodgement amount: ")) # Lodgement amount
+        except ValueError:
+            print("Non-numeric entry!")
+            time.sleep(3)
+            break
+
+        if value > LODGEMENT_LIMIT:
+            print('Exceeds lodgement limit') # Lodgement Limit exceeded
+            time.sleep(3)
+            break
+
+        if value == 0:
+            break
+
+        # Calculate new balances
+        new_cheque_balance = cheque_balance + value
+        new_acc_balance = acc_balance + value
+
+        # Log the transaction
+        atm_log('Lodgement', value)
+        timestamp = str(datetime.datetime.now())
+        put_account_detail(account, new_acc_balance, timestamp)
+        put_account_detail(CHEQUE_AC, new_cheque_balance, timestamp)
+        print(f'New balance: {CURRENCY}{new_acc_balance:.2f}')
+        transaction_log(account, "lodgement", value, "cheque", new_acc_balance)
         time.sleep(3)
-        return False
-
-    if value > LODGEMENT_LIMIT:
-        print('Exceeds lodgement limit') # Lodgement Limit exceeded
-        time.sleep(3)
-        return False
-
-    if value == 0:
-        return False
-
-    # Calculate new balances
-    new_cheque_balance = cheque_balance + value
-    new_acc_balance = acc_balance + value
-
-    # Log the transaction
-    atm_log('Lodgement', value)
-    timestamp = str(datetime.datetime.now())
-    put_account_detail(account, new_acc_balance, timestamp)
-    put_account_detail(CHEQUE_AC, new_cheque_balance, timestamp)
-    print(f'New balance: {CURRENCY}{new_acc_balance:.2f}')
-    transaction_log(account, "lodgement", value, "cheque", new_acc_balance)
-    time.sleep(3)
+        break
 
 
 def menu(card, account):

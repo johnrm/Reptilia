@@ -63,29 +63,29 @@ def atm_log(action, data):
     log.append_row(data)
 
 
-def transaction_log(account, transaction_type, amount, medium, new_acc_balance):
+def transaction_log(acct, trx_type, amount, medium, new_acc_balance):
     """
     Log the transaction for accounting and statement purposes
 
     Args:
-        account (string): - the account for which the transaction is being logged
-        transaction_type (string): - transaction type
+        acct (string): - the account for the transaction being logged
+        trx_type (string): - transaction type
         amount (float): - value of  transaction
         medium (string): - cash or cheque
-        new_acc_balance (float): - new account balance based on this transaction
+        new_acc_balance (float): - new account balance
 
     Returns:
         none
     """
     timestamp = str(datetime.datetime.now())
-    data = [timestamp, account, transaction_type, amount, medium, new_acc_balance]
+    data = [timestamp, acct, trx_type, amount, medium, new_acc_balance]
     log = SHEET.worksheet('transactions')
     log.append_row(data)
 
 
 def statement(account):
     """
-    Displays statement of transactions and account balance for the current card/account
+    Displays statement and account balance for the current card/account
 
     Args:
         account (string): The account for which a statement is required
@@ -97,7 +97,7 @@ def statement(account):
     screen_header("Statement - Page 1")
     transactions = SHEET.worksheet("transactions")
     rows = transactions.get_all_values()
-    print(" Date".ljust(15," "), CURRENCY.rjust(14," "))
+    print(" Date".ljust(15, " "), CURRENCY.rjust(14, " "))
     balance = 0
     row_count = 0
     page_count = 1
@@ -107,15 +107,15 @@ def statement(account):
             date = date[8:10] + "-" + date[5:7] + "-" + date[2:4]
             amount = float(row[3])
             balance = float(row[5])
-            print(date.ljust(15," "), f'{amount:.2f}'.rjust(14," "))
+            print(date.ljust(15, " "), f'{amount:.2f}'.rjust(14, " "))
             row_count += 1  # Increment row count
-            if divmod(row_count,10)[1] == 0:
+            if divmod(row_count, 10)[1] == 0:
                 input('Press <Enter>')
                 page_count += 1  # Increment page count
                 screen_header("Statement - Page " + str(page_count))
-                print(" Date".ljust(15," "), CURRENCY.rjust(14," "))
-    print('--------' , '--------'.rjust(21," "))
-    print('Balance:' , f'{balance:.2f}'.rjust(21," "))
+                print(" Date".ljust(15, " "), CURRENCY.rjust(14, " "))
+    print('--------', '--------'.rjust(21, " "))
+    print('Balance:', f'{balance:.2f}'.rjust(21, " "))
     input('Press <Enter>')
 
 
@@ -220,7 +220,7 @@ def put_card_detail(card, pin_no, pin_count):
     Args:
         card (string): The current card
         pin_no (string): PIN to be input and validated
-        pin_count (int): Current number of failed pin attempts (limited by MAX_PIN_FAIL)
+        pin_count (int): Number of failed pin attempts (up to MAX_PIN_FAIL)
 
     Returns:
         none
@@ -343,7 +343,7 @@ def withdraw(account):
         # Notify if inadequate balance
         screen_header("Withdrawal")
         print(f'Available funds: {CURRENCY}{acc_balance:.2f}')
-        if  acc_balance <= 0:
+        if acc_balance <= 0:
             print('Inadequate funds')
             time.sleep(2)
             break
@@ -355,7 +355,7 @@ def withdraw(account):
         try:
             print(f'Whole amount, multiples of {CURRENCY}10 only')
             value = float(input("Withdrawal amount: "))  # Requested amount
-            if (divmod(value,10)[1] != 0) or not int(value):
+            if (divmod(value, 10)[1] != 0) or not int(value):
                 print('Multiples of 10 only')
                 time.sleep(2)
                 break
@@ -378,7 +378,7 @@ def withdraw(account):
             break
 
         # Calculate new balances
-        value = -1 * value  # Flip the sign to allow withdrawal reduce account balance
+        value = -1 * value  # Flip sign to reduce account balance
         new_cash_balance = cash_balance + value
         new_acc_balance = acc_balance + value
 
@@ -388,7 +388,7 @@ def withdraw(account):
         put_account_detail(account, new_acc_balance, timestamp)
         put_account_detail(CASH_AC, new_cash_balance, timestamp)
         print(f'New balance    : {CURRENCY}{new_acc_balance:.2f}')
-        transaction_log(account, "withdrawal", value, "cash",new_acc_balance)
+        transaction_log(account, "withdrawal", value, "cash", new_acc_balance)
         time.sleep(3)
         break
 
@@ -407,8 +407,8 @@ def lodge(account):
     screen_header("Lodgement")
 
     # Find what funds are available to transact
-    cheque_balance = get_account_detail(CHEQUE_AC)  # Amount in ATM Cheque account
-    acc_balance = get_account_detail(account)  # Amount in user account
+    cheque_balance = get_account_detail(CHEQUE_AC)  # ATM Cheque account
+    acc_balance = get_account_detail(account)  # User account
 
     while True:
         # Notify trx limit
@@ -417,7 +417,7 @@ def lodge(account):
 
         # Input and validate transaction amount
         try:
-            value = round(float(input("Lodgement amount: ")),2)  # Lodgement amount
+            value = round(float(input("Lodgement amount: ")), 2)  # Lodgement
         except ValueError:
             print("Non-numeric entry!")
             time.sleep(2)
@@ -450,7 +450,7 @@ def menu(card, account):
     """
     Menu of user options
 
-    Args: 
+    Args:
         card (string): The current users card
         account (string): The current users account
 
@@ -475,7 +475,8 @@ def menu(card, account):
             atm_log('menu_balance', account)
             screen_header("Account balance")
             balance = get_account_detail(account)
-            print(f'Current balance: {CURRENCY}{balance:.2f}'.center(DISPLAY_WIDTH))
+            print(f'Current balance: {CURRENCY}\
+                {balance:.2f}'.center(DISPLAY_WIDTH))
             time.sleep(3)
 
         elif choice == "2":
@@ -498,7 +499,7 @@ def menu(card, account):
             atm_log('menu_change_pin', account)
             change_pin(card)
 
-        elif choice in ("0",""):
+        elif choice in ("0", ""):
             # Exit the menu
             atm_log('menu_exit', account)
             break
@@ -544,13 +545,14 @@ def main():
             atm_log('card_warning_pin_count', card)
             print(f"{MAX_PIN_FAIL - int(pin_count)} PIN attempts left")
 
-        # Increment fail count if incorrect PIN, reset if PIN is correct, then continue to Menu
+        # Increment PIN fail if bad PIN, reset if PIN is correct.
         while True:
             pin = input_pin(pin_no)
             if not pin:
                 # If PIN is incorrect
                 pin_count = int(pin_count) + 1
-                print(f"Incorrect PIN {MAX_PIN_FAIL - int(pin_count)} attempts left")
+                print(f"Incorrect PIN {MAX_PIN_FAIL - int(pin_count)} \
+                    attempts left")
                 put_card_detail(card, pin_no, pin_count)
                 if pin_count == 3:
                     # Card retained
@@ -567,6 +569,7 @@ def main():
             menu(card, account)
             return_card()
             break
+
 
 atm_log('code_start', 0)  # Log program startup
 main()

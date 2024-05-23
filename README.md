@@ -317,6 +317,10 @@ When validating code, I found that pylint was sensitive about 'return' in an if-
 ### Pylint final report...  
 ![alt pylint](readme_images/pylint.jpg)
 
+I also ran the Code Institute Python Linter
+### CI Python Linter final report...  
+![alt pylint](readme_images/CI_Linter.jpg)
+
  
 Not a bug, but read/write from Google sheets is not the quickest, so introduces small delays at times, unfortunately, outside my control.  
 

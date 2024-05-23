@@ -118,64 +118,50 @@ The user can change the PIN on their card here.
   
 Google Sheets is used to maintain Card data, Accounts, Transactions, and ATM_logs.  
 
+* **gspread**: For access to Google Sheets.
+
 ### Card data...
 ![Card data](readme_images/gcards.jpg)  
-### number:
+* **number**:
 The ID or number for the card  - Unique identified for each 'card'
-### pin:  
+* **pin**:  
 The ID or number for the card  - User changeable
-### pin_fail:  
+* **pin_fail**:  
 The count of failed pin attempts for the card  - Increments to maximum of 3, then card will no longer work without Bank/admin intervention (set this field to 0)  
-### account:  
+* **account**:  
 The bank account associated with the card  - Cards are tied to a bank account.  
 
 ### Accounts...
 ![Accounts](readme_images/gaccounts.jpg)  
-### number:
-Account number
-### name:
-Name on the card
-### address:
-Address for account holder
-### branch:
-Branch for the account
-### balance:
-Balance on the account
-### data:
-Date of last transaction on the account, therefore, the date of the balance
-### status:
-Account status, currently unused but could be used for future revisions for placing accounts on hold or closing accounts.
+* **number**: Account number
+* **name**: Name on the card
+* **address**: Address for account holder
+* **branch**: Branch for the account
+* **balance**: Balance on the account
+* **data**: Date of last transaction on the account, therefore, the date of the balance
+* **status**: Account status, currently unused but could be used for future revisions for placing accounts on hold or closing accounts.
 
 ### Transactions...
 ![Transactions](readme_images/gtransactions.jpg)  
-### date:
-Transaction date
-### account:
-Account on which the transaction took place
-### transaction:
-Transaction type
-### value:
-Value of the transaction
-### medium:
-Medium for the transaction, for this project, it is assumed Cash withdrawals and Cheque lodgements 
-### new_balance:
-Account balance at the end of the transaction. This is typically the same value as written to the Account.
+* **date**: Transaction date
+* **account**: Account on which the transaction took place
+* **transaction**: Transaction type
+* **value**: Value of the transaction
+* **medium**: Medium for the transaction, for this project, it is assumed Cash withdrawals and Cheque lodgements 
+* **new_balance**: Account balance at the end of the transaction. This is typically the same value as written to the Account.
 
 ### ATM log...
 ![ATM Log](readme_images/gatmlog.jpg)  
-### date:
-The date of the action
-### action:
-The action type
-### data:
-Data pertinent to the transaction
+* **date**: The date of the action
+* **action**: The action type
+* **data**: Data pertinent to the transaction
 
 
 ([Back to top](#index))  
 
 
 ## Flowchart
-The flowchart details the core function of the program.  
+This flowchart shows the core function of the program.  
 ![Flowchart of program](readme_images/atm_flowchart.jpg)  
   
 ([Back to top](#index))  
@@ -239,6 +225,7 @@ All behavior is as expected
 3. Validate input amount.  
 4. If Funds are available withdraw the requested amount, decrease account balance and amount of cash remaining in machine.  
 
+Expected:
 Entered amount is checked for multiple of 10 using DivMod. amount not ending in 0 is rejected.
 Account balance is checked. If funds are not available, machine reports 'insufficient funds'
 Machine Cash balance is checked for available cash, If cash is not available, machine reports 'insufficient cash in ATM'
@@ -254,6 +241,7 @@ All behavior is as expected
 3. Machine validates input amount.  
 4. Funds are added to account balance and internal amount in machine.
 
+Expected:
 Entered amount is checked for numeric, any amount up to the Lodgement limit.  
 Machine cheque balance is incremented byt he input amount.  
 
@@ -268,6 +256,7 @@ All behavior is as expected
 3. Key in verification PIN. 4 Digits.  
 4. If both PINs match, PIN is updated on card.  
 
+Expected:
 For Initial and confirmation PIN...
 If PIN is non-numeric, error is flagged and control returns to Menu.  
 If PIN is not 4 digits, error is flagged and control returns to Menu.    
@@ -285,35 +274,29 @@ All behavior is as expected
 3. Balance is shown at the bottom of the last screen.
 4. -Enter- returns control to Menu.
 
+Expected:
+Statement prints which has correct and logical transactions, easily viewable.
+
 Actual:  
 All behavior is as expected  
 
 
 ## Machine Parameters
 The machine has a number of parameters by way of constants which are set on program.
-### Bank name
-BANK_NAME = "Reptilia Bank"
-### Currency
-CURRENCY = "EUR"
-### Max failed PIN on card
-MAX_PIN_FAIL = 3
-### Set display width
-DISPLAY_WIDTH = 30
-### Bank Account (Account for the ATM machine)
-CASH_AC = "9999"
-### Bank Account (Account for the ATM machine)
-CHEQUE_AC = "9998"
-### Transaction limit
-TRANSACTION_LIMIT = 300
+* **Bank name**: BANK_NAME = "Reptilia Bank"
+* **Currency**: CURRENCY = "EUR"
+* **Max failed PIN on card**: MAX_PIN_FAIL = 3
+* **Set display width**: DISPLAY_WIDTH = 30
+* **Bank Account (Account for the ATM machine)**: CASH_AC = "9999"
+* **Bank Account (Account for the ATM machine)**: CHEQUE_AC = "9998"
+* **Withdrawal limit**: WITHDRAWAL_LIMIT = 300
+* **Lodgement limit**: LODGEMENT_LIMIT = 1000
 
 
 ## Test devices  
 Program was also tested on...  
 - Google Pixel 4  
 - Dell Latitude Laptop  
-
-Actual:  
-All behavior is as expected  
 
 
 ## Bugs  
@@ -331,7 +314,6 @@ Type-ahead is possible into keyboard buffer, but not advised. It is best to wait
 
 ([Back to top](#index))
 
-
 ## Technologies used and Deployment  
 The code is written in Python.  
 Program code sits in this Github repository.  
@@ -339,6 +321,16 @@ Data sits in a Google sheet and is accessible via Google auth.
 The development IDE used is Gitpod.  
 Code commits are pushed to Github as the code develops with brief relevant comments.  
 Validation was done with PyLint on GitPod.  
+
+## Frameworks, Libraries and Programs
+
+* **gspread**: For access to Google Sheets.
+* **Google OAuth2**: For authentication and authorization for Google APIs.
+* **datetime**: To manage date and time data.
+* **json**: For handling JSON data.
+* **LucidChart**: Flowchart tool.
+* **GitPod**: Integrated development environment (IDE) used for project.
+
 
 ### Deployment
 Set up an account on http://www.heroku.com Go to Heroku.com and follow the process.  

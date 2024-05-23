@@ -150,11 +150,11 @@ def validate_number(numbers, length):
     """
     if not numbers.isdigit():
         print("Non-numeric entry!")
-        time.sleep(3)
+        time.sleep(2)
         return False
     if len(numbers) != length:
         print(f"{len(numbers)} digits entered, {length} expected!")
-        time.sleep(3)
+        time.sleep(2)
         return False
     return True
 
@@ -169,7 +169,8 @@ def card_input():
     Returns:
         Validated card no. or False
     """
-    card = input("Insert card (or enter card ID): ")
+    card = input("Insert card (or enter card ID): ").strip()
+
     if validate_number(card, 4):
         return card
     return False
@@ -205,7 +206,7 @@ def input_pin(pin_no):
     Returns:
         True or False
     """
-    user_pin = getpass.getpass('Enter PIN (4 digits): ')
+    user_pin = getpass.getpass('Enter PIN (4 digits): ').strip()
     if validate_number(user_pin, 4):
         if user_pin == pin_no:
             return True
@@ -257,11 +258,11 @@ def change_pin(card):
         else:
             atm_log("pin_mismatch", card)
             print('PIN mismatch!')
-            time.sleep(3)
+            time.sleep(2)
     else:
         atm_log("pin_error", card)
         print('PIN error!')
-        time.sleep(3)
+        time.sleep(2)
 
 
 def return_card():
@@ -344,7 +345,7 @@ def withdraw(account):
         print(f'Available funds: {CURRENCY}{acc_balance:.2f}')
         if  acc_balance <= 0:
             print('Inadequate funds')
-            time.sleep(3)
+            time.sleep(2)
             break
 
         # Notify trx limit
@@ -356,26 +357,25 @@ def withdraw(account):
             value = float(input("Withdrawal amount: "))  # Requested amount
             if (divmod(value,10)[1] != 0) or not int(value):
                 print('Multiples of 10 only')
-                time.sleep(3)
+                time.sleep(2)
                 break
         except ValueError:
             print("Non-numeric, decimal or Null entry!")
-            time.sleep(3)
+            time.sleep(2)
             break
 
         if value > WITHDRAWAL_LIMIT:
             print('Exceeds transcation limit')  # Withdrawal Limit exceeded
-            time.sleep(3)
+            time.sleep(2)
             break
         if (acc_balance - value) <= 0:
             print('Exceeds available funds')  # Insufficient funds in account
-            time.sleep(3)
+            time.sleep(2)
             break
         if (cash_balance - value) <= 0:
             print('ATM out of funds')  # Insufficient cash in ATM
-            time.sleep(3)
+            time.sleep(2)
             break
-        time.sleep(3)
 
         # Calculate new balances
         value = -1 * value  # Flip the sign to allow withdrawal reduce account balance
@@ -420,12 +420,12 @@ def lodge(account):
             value = round(float(input("Lodgement amount: ")),2)  # Lodgement amount
         except ValueError:
             print("Non-numeric entry!")
-            time.sleep(3)
+            time.sleep(2)
             break
 
         if value > LODGEMENT_LIMIT:
             print('Exceeds lodgement limit')  # Lodgement Limit exceeded
-            time.sleep(3)
+            time.sleep(2)
             break
 
         if value == 0:
@@ -538,7 +538,7 @@ def main():
         if int(pin_count) == MAX_PIN_FAIL:
             print("Card error - please contact Bank")
             atm_log('card_error_max_pin', card)
-            time.sleep(3)
+            time.sleep(2)
             continue
         if int(pin_count) > 0:
             atm_log('card_warning_pin_count', card)
@@ -556,7 +556,7 @@ def main():
                     # Card retained
                     print("Card retained - please contact Bank")
                     atm_log('card_retained', card)
-                    time.sleep(3)
+                    time.sleep(2)
                     break
                 atm_log('card_pin_fail', card)
                 break

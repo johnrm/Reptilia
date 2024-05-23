@@ -14,6 +14,16 @@
 ## Live Site
 https://reptilia-05304502b20b.herokuapp.com/  
 
+
+## CARD / PIN combinations for testing...    
+* 2234 / 3234  
+* 2235 / 3235  
+* 2236 / 3236  
+* 
+* When asked for a card, type the card number (e.g. 2234) and press Enter
+* When asked for a PIN, type the PIN number (e.g. 3234) and press Enter
+* PIN is not visible when typed!
+
 ([Back to top](#index))  
 
 

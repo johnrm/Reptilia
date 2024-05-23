@@ -313,6 +313,10 @@ Program was also tested on...
 Most bugs were from syntax errors along the way, and from trial/error as I learned the language on the way.  
 Generally, once I found how a coding feature worked and tested, I figured out how to implement it.  
 
+Not a bug, but I struggled for a while trying to write the PIN back to the card tab in Google sheets. I did a lot of googling and eventually found the correct syntax for the .update() method.  
+
+One User testing the code found that a numeric with either leading or trailing spaces would cause a 'non-numeric' error - this was remedied by using the .strip() method on the input string.  
+
 When validating code, I found that pylint was sensitive about 'return' in an if-then-elif-else conditional. While the code worked OK, pylint was not happy. To workaround this I  simplified any affected code and found that using a 'while' loop with 'break' achieved the same thing but with no pylint reports.  
 ### Pylint final report...  
 ![alt pylint](readme_images/pylint.jpg)

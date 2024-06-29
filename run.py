@@ -526,7 +526,7 @@ def main():
     """
     while True:
         atm_log('start_attract', 0)
-        screen_header("ATM v2")
+        screen_header("ATM")
 
         # Get and validate card
         card = card_input()

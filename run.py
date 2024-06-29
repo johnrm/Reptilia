@@ -364,6 +364,10 @@ def withdraw(account):
             time.sleep(2)
             break
 
+        if value < 0:
+            print('Negative not allowed')  # No negative amnount
+            time.sleep(2)
+            break
         if value > WITHDRAWAL_LIMIT:
             print('Exceeds transcation limit')  # Withdrawal Limit exceeded
             time.sleep(2)
@@ -420,6 +424,11 @@ def lodge(account):
             value = round(float(input("Lodgement amount: ")), 2)  # Lodgement
         except ValueError:
             print("Non-numeric entry!")
+            time.sleep(2)
+            break
+
+        if value < 0:
+            print('Negative not allowed')  # No negative amnount
             time.sleep(2)
             break
 
@@ -517,7 +526,7 @@ def main():
     """
     while True:
         atm_log('start_attract', 0)
-        screen_header("ATM")
+        screen_header("ATM v2")
 
         # Get and validate card
         card = card_input()
